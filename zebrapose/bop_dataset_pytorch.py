@@ -9,11 +9,14 @@ from torch.utils.data import Dataset
 
 import sys
 from binary_code_helper.class_id_encoder_decoder import RGB_image_to_class_id_image, class_id_image_to_class_code_images
+from vis_util.image import grid_show
 import torchvision.transforms as transforms
-
 
 import GDR_Net_Augmentation
 from GDR_Net_Augmentation import get_affine_transform
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+PROJ_ROOT = os.path.join(cur_dir, "..")
 
 def crop_resize_by_warp_affine(img, center, scale, output_size, rot=0, interpolation=cv2.INTER_LINEAR):
     """
@@ -247,9 +250,18 @@ class bop_dataset_single_obj_pytorch(Dataset):
 
         cam_param = self.cam_params[index]['cam_K'].reshape((3,3))
 
-        #print("show original train image")
-        #self.visulize(x, entire_mask, mask, GT_img_visible, GT_img_invisible, Bbox)
-        #print(Bbox)
+        # # For debug
+        # print("show original train image")
+        # show_ims = [x[:, :, [2, 1, 0]],
+        #             mask,
+        #             entire_mask,
+        #             GT_img[:, :, [2, 1, 0]]]
+        # show_titles = ["image",
+        #                "visible_mask",
+        #                "entire_mask",
+        #                "GT_img"]
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=os.path.join(PROJ_ROOT, ".cache/ori_img.jpg"))
+
         if self.is_train:           
             x = self.apply_augmentation(x)
             
@@ -262,13 +274,11 @@ class bop_dataset_single_obj_pytorch(Dataset):
             
             Bbox = get_final_Bbox(Bbox, self.resize_method, x.shape[1], x.shape[0])
 
-            #print("show cropped train image")
-            #self.visulize(roi_x, roi_entire_mask, roi_mask, roi_GT_img_visible, roi_GT_img_invisible, None)            
         else:   
-            if self.Detect_Bbox!=None:
+            if self.Detect_Bbox is not None:
                 # replace the Bbox with detected Bbox
                 Bbox = self.Detect_Bbox[index]
-                if Bbox == None: #no valid detection, give a dummy input
+                if Bbox is None:  # no valid detection, give a dummy input
                     roi_x = torch.zeros((3, self.crop_size_img, self.crop_size_img))
                     roi_GT_img = torch.zeros((int(self.GT_code_infos[1]), int(self.crop_size_gt), int(self.crop_size_gt)))
                     roi_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
@@ -287,37 +297,29 @@ class bop_dataset_single_obj_pytorch(Dataset):
             roi_GT_img = get_roi(GT_img, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST, resize_method = self.resize_method)
             roi_mask = get_roi(mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST, resize_method = self.resize_method)
             roi_entire_mask = get_roi(entire_mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST, resize_method = self.resize_method)
-            
-            #print("show test_image")
+
             Bbox = get_final_Bbox(Bbox, self.resize_method, x.shape[1], x.shape[0])
-            # self.visulize(roi_x, roi_entire_mask, roi_mask, roi_GT_img_visible, roi_GT_img_invisible, None)
 
         class_id_image= RGB_image_to_class_id_image(roi_GT_img)
         roi_GT_img = class_id_image_to_class_code_images(class_id_image, self.GT_code_infos[0], self.GT_code_infos[1], self.GT_code_infos[2])
+
+        # # For debug
+        # print("show cropped image")
+        # show_ims = [roi_x[:, :, [2, 1, 0]],
+        #             roi_mask,
+        #             roi_entire_mask,
+        #             roi_GT_img[:, :, [2, 1, 0]]]
+        # show_titles = ["roi_image",
+        #                "roi_visible_mask",
+        #                "roi_entire_mask",
+        #                "roi_GT_img"]
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=os.path.join(PROJ_ROOT, ".cache/roi_img.jpg"))
 
         # add the augmentations and transfrom in torch tensor
         roi_x, roi_entire_mask, roi_mask, class_code_images = self.transform_pre(roi_x, roi_entire_mask, roi_mask, roi_GT_img)
         # for single obj, only one gt
         return roi_x, roi_entire_mask, roi_mask, R, t, Bbox, class_code_images, cam_param
 
-    def visulize(self, x, entire_mask, mask, GT_img_visible, GT_img_invisible, Bbox):
-        cv2.namedWindow('rgb', cv2.WINDOW_NORMAL)
-        cv2.namedWindow('mask', cv2.WINDOW_NORMAL)
-        cv2.namedWindow('entire_mask', cv2.WINDOW_NORMAL)
-        cv2.namedWindow('GT_img_visible', cv2.WINDOW_NORMAL)
-        cv2.namedWindow('GT_img_invisible', cv2.WINDOW_NORMAL)
-
-        x_ = x.copy()
-        if Bbox is not None:
-            cv2.rectangle(x_,(Bbox[0],Bbox[1]),(Bbox[0]+Bbox[2] ,Bbox[1]+Bbox[3] ),(0,255,0),3) 
-        cv2.imshow('rgb',x_)
-        cv2.imshow('mask',mask)
-        cv2.imshow('entire_mask',entire_mask)
-        
-        cv2.imshow('GT_img_visible',GT_img_visible)
-        cv2.imshow('GT_img_invisible',GT_img_invisible)
-
-        cv2.waitKey(0)
 
     def transform_pre(self, sample_x,sample_entire_mask, sample_mask,gt_code):
         composed_transforms_img = transforms.Compose([

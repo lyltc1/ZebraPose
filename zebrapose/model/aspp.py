@@ -6,7 +6,7 @@ class ASPP(nn.Module):
     def __init__(self, num_classes, concat=True, output_kernel_size=1):
         super(ASPP, self).__init__()
         self.concat = concat
-    
+
         #####ASPP
         self.conv_1x1_1 = nn.Conv2d(512, 256, kernel_size=1)
         self.bn_conv_1x1_1 = nn.BatchNorm2d(256)
@@ -83,8 +83,8 @@ class ASPP(nn.Module):
     def forward(self, x_high_feature, x_128=None, x_64=None, x_32=None, x_16=None):
         # (feature_map has shape (batch_size, 512, h/16, w/16)) (assuming self.resnet is ResNet18_OS16 or ResNet34_OS16. If self.resnet instead is ResNet18_OS8 or ResNet34_OS8, it will be (batch_size, 512, h/8, w/8))
 
-        feature_map_h = x_high_feature.size()[2] # (== h/16)
-        feature_map_w = x_high_feature.size()[3] # (== w/16)
+        feature_map_h = x_high_feature.size()[2] # (== h/16 or h/8)
+        feature_map_w = x_high_feature.size()[3] # (== w/16 or w/8)
 
         out_1x1 = F.relu(self.bn_conv_1x1_1(self.conv_1x1_1(x_high_feature))) # (shape: (batch_size, 256, h/16, w/16))
         out_3x3_1 = F.relu(self.bn_conv_3x3_1(self.conv_3x3_1(x_high_feature))) # (shape: (batch_size, 256, h/16, w/16))

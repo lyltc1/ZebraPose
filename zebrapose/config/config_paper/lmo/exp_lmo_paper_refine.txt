@@ -2,6 +2,7 @@
 bop_challange = False
 bop_path = /home/lyl/git/ZebraPose/datasets/BOP_DATASETS
 dataset_name = lmo
+refine = True
 training_data_folder = train_real
 training_data_folder_2 = train_pbr
 val_folder = test

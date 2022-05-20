@@ -1,0 +1,1 @@
+python train_v2.py --cfg config/config_paper/lmo/exp_lmo_paper.txt --obj_name ape

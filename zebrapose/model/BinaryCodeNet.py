@@ -170,6 +170,7 @@ class DeepLabV3(nn.Module):
         #output = F.interpolate(output, size=(h, w), mode="bilinear") # (shape: (batch_size, num_classes, h, w))
 
         mask,binary_code = torch.split(output,[1,self.num_classes-1],1)
+
         return mask, binary_code
 
 
