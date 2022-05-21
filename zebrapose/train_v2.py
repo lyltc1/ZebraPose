@@ -30,7 +30,7 @@ from get_detection_results import get_detection_results, ycbv_select_keyframe
 
 from common_ops import from_output_to_class_mask, from_output_to_class_binary_code, get_batch_size
 
-from test_network_with_test_data import test_network_with_single_obj
+from test_network_with_test_data_v2 import test_network_with_single_obj
 
 def main(configs):
     config_file_name = configs['config_file_name']
@@ -152,6 +152,7 @@ def main(configs):
             camera_params_test[obj_id] = camera_params_test_keyframe
     else:
         dataset_dir_test,_,_,_,_,test_rgb_files,_,test_mask_files,test_mask_visib_files,test_gts,test_gt_infos,_, camera_params_test = bop_io.get_bop_challange_test_data(bop_path, dataset_name, target_obj_id=obj_id+1, data_folder=val_folder)
+    print('len(test_rgb_files)', len(test_rgb_files[obj_id]))
     print('test_rgb_file exsample', test_rgb_files[obj_id][0])
 
     if Detection_reaults != 'none':
@@ -352,8 +353,8 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    check_point_path = check_point_path + config_file_name
-    tensorboard_path = tensorboard_path + config_file_name
+    check_point_path = check_point_path + config_file_name + args.obj_name
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 
