@@ -125,7 +125,7 @@ def CNN_outputs_to_object_pose(mask_image, class_code_image, Bbox, Bbox_Size, cl
             coord_3d = np.ascontiguousarray(Points_3D.astype(np.float32))
             intrinsic_matrix = np.ascontiguousarray(intrinsic_matrix)
 
-            if True:
+            if False:
                 pose_ests, label = pyprogressivex.find6DPoses(
                                                             x1y1 = coord_2d.astype(np.float64),
                                                             x2y2z2 = coord_3d.astype(np.float64),
