@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 from tools_for_BOP import bop_io
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
 
 import torch
 import numpy as np
@@ -19,7 +19,7 @@ from binary_code_helper.CNN_output_to_pose import load_dict_class_id_3D_points, 
 sys.path.append("../bop_toolkit")
 from bop_toolkit_lib import inout
 
-from model.BinaryCodeNet import BinaryCodeNet_Deeplab
+from model.BinaryCodeNet_v2 import BinaryCodeNet_Deeplab_v2
 
 from metric import Calculate_ADD_Error_BOP, Calculate_ADI_Error_BOP
 
@@ -29,9 +29,7 @@ from tools_for_BOP.common_dataset_info import get_obj_info
 
 from binary_code_helper.generate_new_dict import generate_new_corres_dict
 
-from edge_refine.build.examples.edge_refine import py_edge_refine
-
-from tools_for_BOP import write_to_cvs 
+from tools_for_BOP import write_to_cvs
 
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -187,7 +185,7 @@ def main(configs):
     print("predicted binary_code_length", binary_code_length)
     configs['binary_code_length'] = binary_code_length
  
-    net = BinaryCodeNet_Deeplab(
+    net = BinaryCodeNet_Deeplab_v2(
                 num_resnet_layers=resnet_layer, 
                 concat=concat, 
                 binary_code_length=binary_code_length, 
@@ -220,7 +218,7 @@ def main(configs):
     ignore_bit = configs['ignore_bit']
     if ignore_bit!=0:
         new_dict_class_id_3D_points = generate_new_corres_dict(dict_class_id_3D_points, 16, 16-ignore_bit)
-    
+
     img_ids = []
     scene_ids = []
     estimated_Rs = []
@@ -238,9 +236,10 @@ def main(configs):
             masks = masks.cuda()
             class_code_images = class_code_images.cuda()
 
-        pred_mask_prob, pred_code_prob = net(data)
+        pred_mask_prob, pred_entire_mask_prob, pred_code_prob = net(data)
 
         pred_masks = from_output_to_class_mask(pred_mask_prob)
+        pred_entire_masks = from_output_to_class_mask(pred_entire_mask_prob)
         pred_code_images = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
        
         # from binary code to pose
@@ -249,12 +248,15 @@ def main(configs):
         pred_masks = pred_masks.transpose(0, 2, 3, 1)
         pred_masks = pred_masks.squeeze(axis=-1).astype('uint8')
 
+        pred_entire_masks = pred_entire_masks.transpose(0, 2, 3, 1)
+        pred_entire_masks = pred_entire_masks.squeeze(axis=-1).astype('uint8')
+
         Rs = Rs.detach().cpu().numpy()
         ts = ts.detach().cpu().numpy()
         Bboxes = Bboxes.detach().cpu().numpy()
 
         class_code_images = class_code_images.detach().cpu().numpy().transpose(0, 2, 3, 1).squeeze(axis=0).astype('uint8')
-        
+
         for counter, (r_GT, t_GT, Bbox, cam_K) in enumerate(zip(Rs, ts, Bboxes, cam_Ks)):
             if ignore_bit!=0:
                 R_predict, t_predict, success = CNN_outputs_to_object_pose(pred_masks[counter], pred_code_images[counter][:,:,:-ignore_bit],
@@ -265,13 +267,26 @@ def main(configs):
                                                                             Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, dict_class_id_3D_points, 
                                                                             intrinsic_matrix=cam_K)
 
-            if success:     
+            if success:
                 if configs.get('refine', False):
-                    # TODO refine code
-                    entire_mask = entire_masks[counter].cpu().numpy().astype('uint8')
-                    contours, _ = cv2.findContours(entire_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                    mask = masks[counter].cpu().numpy().astype('uint8')
+                    ### refine code
+                    gt_entire_mask = entire_masks[counter].cpu().numpy().astype('uint8')
+                    gt_mask = masks[counter].cpu().numpy().astype('uint8')
+                    pre_entire_mask = pred_entire_masks[counter]
+                    pre_mask = pred_masks[counter]
+                    entire_mask = pre_entire_mask
+                    mask = pre_mask
 
+                    #################################
+                    ##### visualize for debugging
+                    #################################
+                    debug_image_dir = os.path.abspath(
+                        os.path.join(PROJ_ROOT, ".cache/gt_entire_mask/image_{}_{}".format(scene_ids[batch_idx], img_ids[batch_idx])))
+                    if debug:
+                        print("visualize for debugging_{}_{}".format(scene_ids[batch_idx],img_ids[batch_idx]))
+                        if not os.path.exists(debug_image_dir):
+                            os.makedirs(debug_image_dir)
+                    contours, _ = cv2.findContours(entire_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                     visible_contour = np.empty(shape=(0, 2))
                     for contour in contours:
                         for i in range(len(contour)):
@@ -279,10 +294,65 @@ def main(configs):
                             if np.any(mask[y - 1:y + 1, x - 1:x + 1]):
                                 visible_contour = np.append(visible_contour, contour[i], axis=0)
                     visible_contour = mapping_pixel_position_to_original_position(visible_contour, Bbox, BoundingBox_CropSize_GT)
-                    R_predict, t_predict = py_edge_refine(R_predict, t_predict / 1000., visible_contour, mesh_path,
-                                                          os.path.abspath(os.path.join(PROJ_ROOT, ".cache/image")))
-                    t_predict = t_predict.reshape(3, 1) * 1000.
+                    add_err_before_refine = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
+                    R_predict_refine, t_predict_refine = py_edge_refine(R_predict, t_predict / 1000., visible_contour, mesh_path,
+                                                          debug_image_dir)
+                    t_predict_refine = t_predict_refine.reshape(3, 1) * 1000.
 
+                    if debug:
+                        renderer = Renderer(model_plys.values(),
+                                            vertex_tmp_store_folder=os.path.join(PROJ_ROOT, ".cache"),
+                                            vertex_scale=0.001)
+                        predict_img, predict_depth = renderer.render(obj_id, 640, 480, cam_K, R_predict, t_predict / 1000., 0.25, 6.0)
+                        predict_img = get_roi(predict_img, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR, resize_method=resize_method)
+                        predict_depth = get_roi(predict_depth, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR, resize_method=resize_method)
+                        predict_depth = (predict_depth > 0).astype("uint8")
+
+                        predict_img_refine, predict_depth_refine = renderer.render(obj_id, 640, 480, cam_K, R_predict_refine, t_predict_refine / 1000., 0.25, 6.0)
+                        predict_img_refine = get_roi(predict_img_refine, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR,resize_method=resize_method)
+                        predict_depth_refine = get_roi(predict_depth_refine, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR,resize_method=resize_method)
+                        predict_depth_refine = (predict_depth_refine > 0).astype("uint8")
+
+                        mean = torch.as_tensor((0.485, 0.456, 0.406), dtype=data.dtype, device=data.device)
+                        std = torch.as_tensor((0.229, 0.224, 0.225), dtype=data.dtype, device=data.device)
+                        if mean.ndim == 1:
+                            mean = mean.view(-1, 1, 1)
+                        if std.ndim == 1:
+                            std = std.view(-1, 1, 1)
+                        x = data.mul(std).add(mean)
+                        x = x.detach().cpu().numpy()
+                        x = (x.transpose(0, 2, 3, 1)[counter]*255.).astype('uint8')
+                        x = cv2.resize(x, (128, 128))
+                        show_ims = [x[:, :, [2, 1, 0]],
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*pre_mask[:, :, None]*0.6,
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*pre_entire_mask[:, :, None]*0.6,
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*predict_depth[:, :, None]*0.6,
+                                    predict_img_refine[:, :, [2, 1, 0]],
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*gt_mask[:, :, None]*0.6,
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*gt_entire_mask[:, :, None]*0.6,
+                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*predict_depth_refine[:, :, None]*0.6]
+                        show_titles = ["image",
+                                       "predict_visible_mask",
+                                       "predict_entire_mask",
+                                       "predict_pose_mask_before_refine",
+                                       "predict_pose_refine",
+                                       "groundTruth_visible_mask",
+                                       "groundTruth_entire_mask",
+                                       "predict_pose_after_refine"
+                                       ]
+                        grid_show(show_ims, show_titles, row=2, col=4, save_path=os.path.join(debug_image_dir, "debug_img.jpg"))
+                    R_predict = R_predict_refine
+                    t_predict = t_predict_refine
+
+                    add_err_after_refine = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
+                    if debug:
+                        with open(os.path.join(debug_image_dir,"add_err.txt"), "w") as f:
+                            f.write("add_err_before_refine\n")
+                            f.write(str(add_err_before_refine))
+                            f.write("\nadd_err_after_refine\n")
+                            f.write(str(add_err_after_refine))
+                            f.write("\nobject diameter\n")
+                            f.write(str(obj_diameter))
                 estimated_Rs.append(R_predict)
                 estimated_Ts.append(t_predict)
             else:
@@ -329,7 +399,7 @@ def main(configs):
                     if ady_error < t:
                         sum_correct = sum_correct + 1
                 AUC_ADY_error[batch_idx] = sum_correct/10
-             
+
     #scores = [1 for x in range(len(estimated_Rs))]
     cvs_path = os.path.join(eval_output_path, 'pose_result_bop/')
     if not os.path.exists(cvs_path):
@@ -340,7 +410,7 @@ def main(configs):
     ADX_passed = np.mean(ADX_passed)
     ADX_passed_5 = np.mean(ADX_passed_5)
     ADX_passed_2 = np.mean(ADX_passed_2)
-    ADX_error_mean= np.mean(ADX_error)
+    ADX_error_mean = np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
     print('{}/{}'.format(main_metric_name,main_metric_name), ADX_passed)
     print('AUC_{}/{}'.format(main_metric_name,main_metric_name), AUC_ADX_error)
@@ -393,11 +463,13 @@ if __name__ == "__main__":
     parser.add_argument('--ckpt_file', type=str)
     parser.add_argument('--ignore_bit', default='0', type=str)
     parser.add_argument('--eval_output_path', type=str)
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     config_file = args.cfg
     checkpoint_file = args.ckpt_file
     eval_output_path = args.eval_output_path
     obj_name = args.obj_name
+    debug = args.debug
     configs = parse_cfg(config_file)
 
     configs['obj_name'] = obj_name
@@ -419,4 +491,11 @@ if __name__ == "__main__":
 
     if configs.get('refine', False):
         from binary_code_helper.CNN_output_to_pose import mapping_pixel_position_to_original_position
+
+    if debug:
+        from edge_refine.build.examples.edge_refine_debug import py_edge_refine
+        from vis_util.image import grid_show
+        from lib.meshrenderer.meshrenderer_phong import Renderer
+    else:
+        from edge_refine.build.examples.edge_refine import py_edge_refine
     main(configs)

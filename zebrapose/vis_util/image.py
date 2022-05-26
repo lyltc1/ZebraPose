@@ -36,7 +36,7 @@ def grid_show(ims, titles=None, row=1, col=3, dpi=200, save_path=None, title_fon
                 break
             plt.subplot(row, col, k + 1)
             plt.axis("off")
-            plt.imshow(ims[k])
+            plt.imshow(ims[k].astype('uint8'))
             if titles is not None:
                 plt.text(
                     0.5,

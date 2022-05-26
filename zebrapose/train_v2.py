@@ -273,9 +273,13 @@ def main(configs):
             writer.add_scalar('Loss/training loss binary code', loss_b, iteration_step)
 
             # test the trained CNN
-            log_freq = 1000
+            if iteration_step < total_iteration * 0.8:
+                log_freq = 20000
+            else:
+                log_freq = 1000
 
-            if iteration_step % log_freq == 0:
+
+            if iteration_step % log_freq == 0 :
                 if binarycode_loss.histogram is not None:
                     np.set_printoptions(formatter={'float': lambda x: "{0:.2f}".format(x)})
                     print('Train err:{}'.format(binarycode_loss.histogram.detach().cpu().numpy()))
