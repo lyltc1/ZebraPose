@@ -18,7 +18,7 @@ image_augmentations_lm=(
                 iaa.Sometimes(0.4, iaa.Invert(0.20, per_channel=True)),
                 iaa.Sometimes(0.5, iaa.Multiply((0.7, 1.4), per_channel=0.8)),
                 iaa.Sometimes(0.5, iaa.Multiply((0.7, 1.4))),
-                iaa.Sometimes(0.5, iaa.ContrastNormalization((0.5, 2.0), per_channel=0.3))
+                iaa.Sometimes(0.5, iaa.contrast.LinearContrast((0.5, 2.0), per_channel=0.3))
         ], random_order=False)
     )
 
@@ -30,7 +30,7 @@ image_augmentations_bop=(
                 iaa.Sometimes(0.3, iaa.Invert(0.2, per_channel=True)),
                 iaa.Sometimes(0.5, iaa.Multiply((0.6, 1.4), per_channel=0.5)),
                 iaa.Sometimes(0.5, iaa.Multiply((0.6, 1.4))),
-                iaa.Sometimes(0.5, iaa.LinearContrast((0.5, 2.2), per_channel=0.3))
+                iaa.Sometimes(0.5, iaa.contrast.LinearContrast((0.5, 2.2), per_channel=0.3))
                 ], random_order = False)
         )
 
@@ -171,7 +171,7 @@ def build_augmentations(use_peper_salt, use_motion_blur):
                                     iaa.Sometimes(0.4, iaa.Invert(0.20, per_channel=True)),
                                     iaa.Sometimes(0.5, iaa.Multiply((0.7, 1.4), per_channel=0.8)),
                                     iaa.Sometimes(0.5, iaa.Multiply((0.7, 1.4))),
-                                    iaa.Sometimes(0.5, iaa.ContrastNormalization((0.5, 2.0), per_channel=0.3))
+                                    iaa.Sometimes(0.5, iaa.contrast.LinearContrast((0.5, 2.0), per_channel=0.3))
                                     ]
   
     image_augmentations=iaa.Sequential(augmentations, random_order = False)
