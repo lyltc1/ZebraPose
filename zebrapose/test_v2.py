@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 sys.path.insert(0, os.getcwd())
 
@@ -52,7 +53,6 @@ def VOCap(rec, prec):
 
 
 def compute_auc_posecnn(errors):
-    # NOTE: Adapted from https://github.com/yuxng/YCB_Video_toolbox/blob/master/evaluate_poses_keyframe.m
     errors = errors.copy()
     d = np.sort(errors)
     d[d > 0.1] = np.inf
@@ -179,7 +179,7 @@ def main(configs):
                                             use_peper_salt=use_peper_salt, use_motion_blur=use_motion_blur
                                         )
     print("test image example:", test_rgb_files[obj_id][0], flush=True)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=num_workers)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
 
     binary_code_length = number_of_itration
     print("predicted binary_code_length", binary_code_length)
@@ -241,7 +241,7 @@ def main(configs):
         pred_masks = from_output_to_class_mask(pred_mask_prob)
         pred_entire_masks = from_output_to_class_mask(pred_entire_mask_prob)
         pred_code_images = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
-       
+
         # from binary code to pose
         pred_code_images = pred_code_images.transpose(0, 2, 3, 1)
 
@@ -274,14 +274,24 @@ def main(configs):
                     gt_mask = masks[counter].cpu().numpy().astype('uint8')
                     pre_entire_mask = pred_entire_masks[counter]
                     pre_mask = pred_masks[counter]
-                    entire_mask = pre_entire_mask
-                    mask = pre_mask
+                    entire_mask = None
+                    mask = None
+                    if configs.get('refine_entire_mask_type') == 'pre_entire_mask':
+                        entire_mask = pre_entire_mask
+                    elif configs.get('refine_entire_mask_type') == 'gt_entire_mask':
+                        entire_mask = gt_entire_mask
+                    if configs.get('refine_mask_type') == 'pre_mask':
+                        mask = pre_mask
+                    elif configs.get('refine_mask_type') == 'gt_mask':
+                        mask = gt_mask
 
                     #################################
                     ##### visualize for debugging
                     #################################
                     debug_image_dir = os.path.abspath(
-                        os.path.join(PROJ_ROOT, ".cache/gt_entire_mask/image_{}_{}".format(scene_ids[batch_idx], img_ids[batch_idx])))
+                        os.path.join(PROJ_ROOT, ".cache/{}_refine_by_{}_{}/image_{}_{}".
+                                     format(obj_name, configs.get('refine_entire_mask_type'),
+                                     configs.get('refine_mask_type'), scene_ids[batch_idx], img_ids[batch_idx])))
                     if debug:
                         print("visualize for debugging_{}_{}".format(scene_ids[batch_idx],img_ids[batch_idx]))
                         if not os.path.exists(debug_image_dir):
@@ -291,7 +301,7 @@ def main(configs):
                     for contour in contours:
                         for i in range(len(contour)):
                             x, y = contour[i, 0]  # [x,y]
-                            if np.any(mask[y - 1:y + 1, x - 1:x + 1]):
+                            if np.any(mask[y - 1:y + 1, x - 1:x + 1]) and x > 0 and y > 0 and x < entire_mask.shape[1] and y < entire_mask.shape[0]:
                                 visible_contour = np.append(visible_contour, contour[i], axis=0)
                     visible_contour = mapping_pixel_position_to_original_position(visible_contour, Bbox, BoundingBox_CropSize_GT)
                     add_err_before_refine = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
@@ -322,25 +332,65 @@ def main(configs):
                         x = data.mul(std).add(mean)
                         x = x.detach().cpu().numpy()
                         x = (x.transpose(0, 2, 3, 1)[counter]*255.).astype('uint8')
+                        x = cv2.cvtColor(x, cv2.COLOR_RGB2BGR)
                         x = cv2.resize(x, (128, 128))
-                        show_ims = [x[:, :, [2, 1, 0]],
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*pre_mask[:, :, None]*0.6,
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*pre_entire_mask[:, :, None]*0.6,
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*predict_depth[:, :, None]*0.6,
+
+                        pre_mask_contour, _ = cv2.findContours(pre_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        x_pre_mask_contour = x.copy()
+                        cv2.drawContours(x_pre_mask_contour, pre_mask_contour, -1, (0, 0, 255), 1)
+
+                        pre_entire_mask_contour, _ = cv2.findContours(pre_entire_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        x_pre_entire_mask_contour = x.copy()
+                        cv2.drawContours(x_pre_entire_mask_contour, pre_entire_mask_contour, -1, (0, 0, 255), 1)
+
+                        predict_depth_contour, _ = cv2.findContours(predict_depth, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        predict_depth_refine_contour, _ = cv2.findContours(predict_depth_refine, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        x_predict_depth_before_and_after_contour = x.copy()
+                        cv2.drawContours(x_predict_depth_before_and_after_contour, predict_depth_contour, -1, (0, 0, 255), 1)
+                        cv2.drawContours(x_predict_depth_before_and_after_contour, predict_depth_refine_contour, -1, (255, 0, 0), 1)
+
+
+                        gt_mask_contour, _ = cv2.findContours(gt_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        x_gt_mask_contour = x.copy()
+                        cv2.drawContours(x_gt_mask_contour, gt_mask_contour, -1, (0, 0, 255), 1)
+
+                        gt_entire_mask_contour, _ = cv2.findContours(gt_entire_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                        x_gt_entire_mask_contour = x.copy()
+                        cv2.drawContours(x_gt_entire_mask_contour, gt_entire_mask_contour, -1, (255, 0, 0), 1)
+
+                        show_ims = [x,
+                                    x_pre_mask_contour,
+                                    x_pre_entire_mask_contour,
+                                    x_predict_depth_before_and_after_contour,
                                     predict_img_refine[:, :, [2, 1, 0]],
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*gt_mask[:, :, None]*0.6,
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*gt_entire_mask[:, :, None]*0.6,
-                                    x[:, :, [2, 1, 0]]*0.4 + x[:, :, [2, 1, 0]]*predict_depth_refine[:, :, None]*0.6]
+                                    x_gt_mask_contour,
+                                    x_gt_entire_mask_contour]
                         show_titles = ["image",
                                        "predict_visible_mask",
                                        "predict_entire_mask",
-                                       "predict_pose_mask_before_refine",
+                                       "predict_pose_mask_before(b)_and_after(r)_refine",
                                        "predict_pose_refine",
                                        "groundTruth_visible_mask",
-                                       "groundTruth_entire_mask",
-                                       "predict_pose_after_refine"
-                                       ]
+                                       "groundTruth_entire_mask"]
                         grid_show(show_ims, show_titles, row=2, col=4, save_path=os.path.join(debug_image_dir, "debug_img.jpg"))
+                        show_ims = [x,
+                                    class_code_images[:, :, 0: 3]*255,
+                                    pred_code_images[counter][:, :, 0: 3]*255,
+                                    class_code_images[:, :, 1: 4] * 255,
+                                    pred_code_images[counter][:, :, 1: 4] * 255,
+                                    class_code_images[:, :, 3: 6] * 255,
+                                    pred_code_images[counter][:, :, 3: 6] * 255,
+                                    ]
+                        show_titles = ["image",
+                                       "groundTruth_code_images[0:3]",
+                                       "pred_code_images[0:3]",
+                                       "groundTruth_code_images[1:4]",
+                                       "pred_code_images[1:4]",
+                                       "groundTruth_code_images[3:6]",
+                                       "pred_code_images[3:6]",
+                                       ]
+                        grid_show(show_ims, show_titles, row=2, col=4, save_path=os.path.join(debug_image_dir, "code_img.jpg"))
+
                     R_predict = R_predict_refine
                     t_predict = t_predict_refine
 
@@ -400,7 +450,7 @@ def main(configs):
                         sum_correct = sum_correct + 1
                 AUC_ADY_error[batch_idx] = sum_correct/10
 
-    #scores = [1 for x in range(len(estimated_Rs))]
+    scores = [1 for x in range(len(estimated_Rs))]
     cvs_path = os.path.join(eval_output_path, 'pose_result_bop/')
     if not os.path.exists(cvs_path):
         os.makedirs(cvs_path)
@@ -457,7 +507,7 @@ def main(configs):
     ####
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='BinaryCodeNet')
+    parser = argparse.ArgumentParser(description='BinaryCodeNet_test')
     parser.add_argument('--cfg', type=str) # config file
     parser.add_argument('--obj_name', type=str)
     parser.add_argument('--ckpt_file', type=str)
@@ -467,7 +517,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     config_file = args.cfg
     checkpoint_file = args.ckpt_file
-    eval_output_path = args.eval_output_path
     obj_name = args.obj_name
     debug = args.debug
     configs = parse_cfg(config_file)
@@ -481,13 +530,20 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d %H:%M:%S'))
     configs['eval_output_path'] = eval_output_path
-
     configs['ignore_bit'] = int(args.ignore_bit)
+    if not os.path.exists(eval_output_path):
+        os.makedirs(eval_output_path)
+    with open(os.path.join(eval_output_path, 'config.txt'), 'w') as f:
+        f.writelines('------------------ start ------------------' + '\n')
+        for eachArg, value in configs.items():
+            f.writelines(eachArg + ' : ' + str(value) + '\n')
+        f.writelines('------------------- end -------------------')
 
-    #print the configurations
-    for key in configs:
-        print(key, " : ", configs[key], flush=True)
+    f = open(os.path.join(eval_output_path, 'log.txt'), 'a')
+    sys.stdout = f
+    sys.stderr = f  # redirect std err, if necessary
 
     if configs.get('refine', False):
         from binary_code_helper.CNN_output_to_pose import mapping_pixel_position_to_original_position

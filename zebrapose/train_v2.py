@@ -344,9 +344,9 @@ def main(configs):
             break
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='BinaryCodeNet')
+    parser = argparse.ArgumentParser(description='BinaryCodeNet_train')
     parser.add_argument('--cfg', type=str) # config file
-    parser.add_argument('--obj_name', type=str) # config file
+    parser.add_argument('--obj_name', type=str)
     args = parser.parse_args()
     config_file = args.cfg
     configs = parse_cfg(config_file)

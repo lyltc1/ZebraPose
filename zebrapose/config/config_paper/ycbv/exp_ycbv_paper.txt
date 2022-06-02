@@ -1,11 +1,14 @@
+refine = True
+refine_entire_mask_type = gt_entire_mask
+refine_mask_type = gt_mask
 #### training dataset
 bop_challange = False
-bop_path = /home/ysu/data/data_object_pose/Remote_BOP
+bop_path = /home/lyl/git/ZebraPose/datasets/BOP_DATASETS
 dataset_name = ycbv
 training_data_folder = train_real
 training_data_folder_2 = train_pbr
-val_folder = test
-test_folder = test
+val_folder = train_pbr
+test_folder = train_pbr
 second_dataset_ratio = 0.75
 num_workers = 8
 train_obj_visible_theshold = 0.2
@@ -31,8 +34,9 @@ concat_encoder_decoder = True
 
 #### check points
 load_checkpoint=False
-check_point_path=/home/ysu/data/6dof_pose_experiments/experiments/checkpoints/
-tensorboard_path=/home/ysu/data/6dof_pose_experiments/experiments/tensorboard_logs/runs/
+check_point_path=results/checkpoints/
+tensorboard_path=results/tensorboard_logs/runs/
+eval_output_path=results/evaluate_report/
 ####
 
 

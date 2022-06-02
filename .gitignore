@@ -5,3 +5,4 @@ __pycache__
 datasets/
 results/
 bop_toolkit/
+*log*

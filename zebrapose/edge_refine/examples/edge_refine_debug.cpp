@@ -42,8 +42,9 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
   renderer_geometry_ptr->SetUp(); // Set up GLFW
   renderer_geometry_ptr->AddBody(body_ptr);
   // 设置renderer
-  Intrinsics intrinsics{572.41140, 573.57043, 325.26110,
-                        242.04899, 640, 480};
+//  Intrinsics intrinsics{572.41140, 573.57043, 325.26110,
+//                        242.04899, 640, 480};
+  Intrinsics intrinsics{1066.778, 1067.487, 312.9869, 241.3109, 640, 480};
   float z_min = 0.001f;
   float z_max = 50.0f;
   auto renderer_ptr= std::make_shared<NormalRenderer>(
@@ -58,7 +59,8 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
   tikhonov_matrix_.diagonal().tail<3>().array() =
       tikhonov_parameter_translation_;
   clock_t before_iter=clock();
-  for (int iter = 0; iter < 2; iter++)
+  float last_cost = 1e8;
+  for (int iter = 0; iter < 10; iter++)
   {
     // 渲染图片
     renderer_ptr->set_camera2world_pose(camera2body_pose);
@@ -146,6 +148,12 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
       H += de_dtheta.transpose() * de_dtheta;
       b -= de_dtheta.transpose() * e;
     }
+    if(cost < last_cost){
+      last_cost = cost;
+    }
+    else{
+        break;
+    }
     // Optimize and update pose
     Eigen::FullPivLU<Eigen::Matrix<float, 6, 6>> lu{tikhonov_matrix_ + H};
     if (lu.isInvertible()) {
@@ -159,7 +167,7 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
     }
 
     cv::imwrite(save_path_prefix + "/R_t_contour_match_" + std::to_string(iter) + ".jpg", contour_image);
-    std::cout << "cost for iter" << iter << ":" << cost << std::endl;
+    std::cout << "cost for iter" << iter << ":" << cost / visible_contours.size() / 2 << std::endl;
   }
   R = body2camera_pose.rotation();
   t = body2camera_pose.translation();

@@ -252,6 +252,8 @@ class bop_dataset_single_obj_pytorch(Dataset):
 
         # # For debug
         # print("show original train image")
+        # save_dir = os.path.join(PROJ_ROOT, ".cache/{}_{}_{}".format(self.dataset_dir.split("/")[-1], self.data_folder, self.gts[0]['obj_id']))
+        # save_path = os.path.join(save_dir, "{}_{}_ori_img.jpg".format(scene_id, index))
         # show_ims = [x[:, :, [2, 1, 0]],
         #             mask,
         #             entire_mask,
@@ -260,7 +262,7 @@ class bop_dataset_single_obj_pytorch(Dataset):
         #                "visible_mask",
         #                "entire_mask",
         #                "GT_img"]
-        # grid_show(show_ims, show_titles, row=2, col=2, save_path=os.path.join(PROJ_ROOT, ".cache/ori_img.jpg"))
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=save_path)
 
         if self.is_train:           
             x = self.apply_augmentation(x)
@@ -308,12 +310,13 @@ class bop_dataset_single_obj_pytorch(Dataset):
         # show_ims = [roi_x[:, :, [2, 1, 0]],
         #             roi_mask,
         #             roi_entire_mask,
-        #             roi_GT_img[:, :, [2, 1, 0]]]
+        #             roi_GT_img[:, :, 0: 3]*255]
         # show_titles = ["roi_image",
         #                "roi_visible_mask",
         #                "roi_entire_mask",
         #                "roi_GT_img"]
-        # grid_show(show_ims, show_titles, row=2, col=2, save_path=os.path.join(PROJ_ROOT, ".cache/roi_img.jpg"))
+        # save_path = os.path.join(save_dir, "{}_{}_crop_img.jpg".format(scene_id, index))
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=save_path)
 
         # add the augmentations and transfrom in torch tensor
         roi_x, roi_entire_mask, roi_mask, class_code_images = self.transform_pre(roi_x, roi_entire_mask, roi_mask, roi_GT_img)

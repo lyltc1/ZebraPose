@@ -37,6 +37,9 @@ def grid_show(ims, titles=None, row=1, col=3, dpi=200, save_path=None, title_fon
             plt.subplot(row, col, k + 1)
             plt.axis("off")
             plt.imshow(ims[k].astype('uint8'))
+            if ims[k].ndim == 2:
+                plt.colorbar()
+
             if titles is not None:
                 plt.text(
                     0.5,
@@ -55,5 +58,5 @@ def grid_show(ims, titles=None, row=1, col=3, dpi=200, save_path=None, title_fon
         if save_path is not None:
             mkdir_p(osp.dirname(save_path))
             plt.savefig(save_path)
-    return fig
+    plt.close()
 
