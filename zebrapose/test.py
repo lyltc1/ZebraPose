@@ -180,7 +180,7 @@ def main(configs):
                                             use_peper_salt=use_peper_salt, use_motion_blur=use_motion_blur
                                         )
     print("test image example:", test_rgb_files[obj_id][0], flush=True)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
 
     binary_code_length = number_of_itration
     print("predicted binary_code_length", binary_code_length)
@@ -396,6 +396,16 @@ def main(configs):
                                        "right_bit_code_images"
                                        ]
                         grid_show(show_ims, show_titles, row=2, col=4, save_path=os.path.join(debug_image_dir, "code_img.jpg"))
+
+                        right_bit_code_images = (class_code_images == pred_code_images[counter])
+                        for i in range(1,16):
+                            right_bit_code_images[:,:,i] = np.logical_and(right_bit_code_images[:,:,i-1], right_bit_code_images[:,:,i])
+                        show_ims = []
+                        show_titles = []
+                        for i in range(16):
+                            show_ims.append(right_bit_code_images[:, :, i]*255)
+                            show_titles.append("right_bit_code_images" + str(i))
+                        grid_show(show_ims, show_titles, row=4, col=4, save_path=os.path.join(debug_image_dir, "per_code_img.jpg"))
 
                     R_predict = R_predict_refine
                     t_predict = t_predict_refine
