@@ -180,7 +180,7 @@ def main(configs):
                                             use_peper_salt=use_peper_salt, use_motion_blur=use_motion_blur
                                         )
     print("test image example:", test_rgb_files[obj_id][0], flush=True)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
 
     binary_code_length = number_of_itration
     print("predicted binary_code_length", binary_code_length)
