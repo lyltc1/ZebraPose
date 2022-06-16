@@ -8,7 +8,7 @@ import argparse
 
 from tools_for_BOP import bop_io
 from tools_for_BOP.common_dataset_info import get_obj_info
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch_v2
 
 import torch
 from torch import optim
@@ -108,7 +108,7 @@ def main(configs):
     ########################## define data loader
     batch_size_1_dataset, batch_size_2_dataset = get_batch_size(second_dataset_ratio, batch_size)
 
-    train_dataset = bop_dataset_single_obj_pytorch(
+    train_dataset = bop_dataset_single_obj_pytorch_v2(
                                                     dataset_dir, training_data_folder, rgb_files[obj_id], mask_files[obj_id], mask_visib_files[obj_id], 
                                                     gts[obj_id], gt_infos[obj_id], cam_params[obj_id], True, BoundingBox_CropSize_image, 
                                                     BoundingBox_CropSize_GT, GT_code_infos,  padding_ratio=padding_ratio, resize_method=resize_method, 
@@ -118,7 +118,7 @@ def main(configs):
 
     if training_data_folder_2 != 'none':
         dataset_dir_pbr,_,_,_,_,rgb_files_pbr,_,mask_files_pbr,mask_visib_files_pbr,gts_pbr,gt_infos_pbr,_, camera_params_pbr = bop_io.get_dataset(bop_path, dataset_name, train=True, data_folder=training_data_folder_2, data_per_obj=True, incl_param=True, train_obj_visible_theshold=train_obj_visible_theshold)
-        train_dataset_2 = bop_dataset_single_obj_pytorch(
+        train_dataset_2 = bop_dataset_single_obj_pytorch_v2(
                                                         dataset_dir_pbr, training_data_folder_2, rgb_files_pbr[obj_id], mask_files_pbr[obj_id], mask_visib_files_pbr[obj_id], 
                                                         gts_pbr[obj_id], gt_infos_pbr[obj_id], camera_params_pbr[obj_id], True, 
                                                         BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
@@ -160,7 +160,7 @@ def main(configs):
     else:
         Det_Bbox = None
 
-    test_dataset = bop_dataset_single_obj_pytorch(
+    test_dataset = bop_dataset_single_obj_pytorch_v2(
                                             dataset_dir_test, val_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id], 
                                             test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False, 
                                             BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
@@ -239,7 +239,7 @@ def main(configs):
                 entire_masks=entire_masks.cuda()
                 masks = masks.cuda()
                 class_code_images = class_code_images.cuda()
-         
+
             optimizer.zero_grad()
             if data.shape[0]!= batch_size:
                 raise ValueError(f"batch size wrong")
