@@ -347,3 +347,169 @@ class bop_dataset_single_obj_pytorch(Dataset):
             x = augmentations.augment_image(x)
 
         return x
+
+
+class bop_dataset_single_obj_pytorch_v2(Dataset):
+    def __init__(self, dataset_dir, data_folder, rgb_files, mask_files, mask_visib_files, gts, gt_infos, cam_params,
+                 is_train, crop_size_img, crop_size_gt, GT_code_infos, padding_ratio=1.5, resize_method="crop_resize",
+                 use_peper_salt=False, use_motion_blur=False, Detect_Bbox=None):
+        # gts: rotation and translation
+        # gt_infos: bounding box
+        self.rgb_files = rgb_files
+        self.mask_visib_files = mask_visib_files
+        self.mask_files = mask_files
+        self.gts = gts
+        self.gt_infos = gt_infos
+        self.cam_params = cam_params
+        self.dataset_dir = dataset_dir
+        self.data_folder = data_folder
+        self.is_train = is_train
+        self.GT_code_infos = GT_code_infos
+        self.crop_size_img = crop_size_img
+        self.crop_size_gt = crop_size_gt
+        self.resize_method = resize_method
+        self.Detect_Bbox = Detect_Bbox
+        self.padding_ratio = padding_ratio
+        self.use_peper_salt = use_peper_salt
+        self.use_motion_blur = use_motion_blur
+
+        self.nSamples = len(self.rgb_files)
+
+    def __len__(self):
+        return self.nSamples
+
+    def __getitem__(self, index):
+        # return training image, mask, bounding box, R, T, GT_image
+        rgb_fn = self.rgb_files[index]
+        mask_visib_fns = self.mask_visib_files[index]
+        mask_fns = self.mask_files[index]
+
+        x = cv2.imread(rgb_fn)
+        mask = cv2.imread(mask_visib_fns[0], 0)
+        entire_mask = cv2.imread(mask_fns[0], 0)
+
+        # rgb_files    ...datasetpath/train/scene_id/rgb/img.png
+        rgb_fn = rgb_fn.split("/")
+        scene_id = rgb_fn[-3]
+        GT_image_name = mask_visib_fns[0].split("/")[-1]
+
+        GT_img_dir = os.path.join(self.dataset_dir, self.data_folder + '_GT_v2', scene_id)
+        GT_img_fn = os.path.join(GT_img_dir, GT_image_name)
+        GT_img = cv2.imread(GT_img_fn)
+
+        gt = self.gts[index]
+        gt_info = self.gt_infos[index]
+
+        R = np.array(gt['cam_R_m2c']).reshape(3, 3)
+        t = np.array(gt['cam_t_m2c'])
+        Bbox = np.array(gt_info['bbox_visib'])
+
+        cam_param = self.cam_params[index]['cam_K'].reshape((3, 3))
+
+        # # For debug
+        # print("show original train image")
+        # save_dir = os.path.join(PROJ_ROOT, ".cache/{}_{}_{}".format(self.dataset_dir.split("/")[-1], self.data_folder, self.gts[0]['obj_id']))
+        # save_path = os.path.join(save_dir, "{}_{}_ori_img.jpg".format(scene_id, index))
+        # show_ims = [x[:, :, [2, 1, 0]],
+        #             mask,
+        #             entire_mask,
+        #             GT_img[:, :, [2, 1, 0]]]
+        # show_titles = ["image",
+        #                "visible_mask",
+        #                "entire_mask",
+        #                "GT_img"]
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=save_path)
+
+        if self.is_train:
+            x = self.apply_augmentation(x)
+
+            Bbox = aug_Bbox(Bbox, padding_ratio=self.padding_ratio)
+
+            roi_x = get_roi(x, Bbox, self.crop_size_img, interpolation=cv2.INTER_LINEAR,
+                            resize_method=self.resize_method)
+            roi_GT_img = get_roi(GT_img, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                                 resize_method=self.resize_method)
+            roi_mask = get_roi(mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                               resize_method=self.resize_method)
+            roi_entire_mask = get_roi(entire_mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                                      resize_method=self.resize_method)
+
+            Bbox = get_final_Bbox(Bbox, self.resize_method, x.shape[1], x.shape[0])
+
+        else:
+            if self.Detect_Bbox is not None:
+                # replace the Bbox with detected Bbox
+                Bbox = self.Detect_Bbox[index]
+                if Bbox is None:  # no valid detection, give a dummy input
+                    roi_x = torch.zeros((3, self.crop_size_img, self.crop_size_img))
+                    roi_GT_img = torch.zeros(
+                        (int(self.GT_code_infos[1]), int(self.crop_size_gt), int(self.crop_size_gt)))
+                    roi_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
+                    roi_entire_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
+                    Bbox = np.array([0, 0, 0, 0], dtype='int')
+                    return roi_x, roi_entire_mask, roi_mask, R, t, Bbox, roi_GT_img, cam_param
+
+            if not os.path.exists(GT_img_fn):
+                # some test fold doesn't provide GT, fill GT with dummy value
+                GT_img = np.zeros(x.shape)
+                mask = np.zeros((x.shape[0], x.shape[1]))
+                entire_mask = np.zeros((x.shape[0], x.shape[1]))
+
+            Bbox = padding_Bbox(Bbox, padding_ratio=self.padding_ratio)
+            roi_x = get_roi(x, Bbox, self.crop_size_img, interpolation=cv2.INTER_LINEAR,
+                            resize_method=self.resize_method)
+            roi_GT_img = get_roi(GT_img, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                                 resize_method=self.resize_method)
+            roi_mask = get_roi(mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                               resize_method=self.resize_method)
+            roi_entire_mask = get_roi(entire_mask, Bbox, self.crop_size_gt, interpolation=cv2.INTER_NEAREST,
+                                      resize_method=self.resize_method)
+
+            Bbox = get_final_Bbox(Bbox, self.resize_method, x.shape[1], x.shape[0])
+
+        class_id_image = RGB_image_to_class_id_image(roi_GT_img)
+        roi_GT_img = class_id_image_to_class_code_images(class_id_image, self.GT_code_infos[0], self.GT_code_infos[1],
+                                                         self.GT_code_infos[2])
+
+        # # For debug
+        # print("show cropped image")
+        # show_ims = [roi_x[:, :, [2, 1, 0]],
+        #             roi_mask,
+        #             roi_entire_mask,
+        #             roi_GT_img[:, :, 0: 3]*255]
+        # show_titles = ["roi_image",
+        #                "roi_visible_mask",
+        #                "roi_entire_mask",
+        #                "roi_GT_img"]
+        # save_path = os.path.join(save_dir, "{}_{}_crop_img.jpg".format(scene_id, index))
+        # grid_show(show_ims, show_titles, row=2, col=2, save_path=save_path)
+
+        # add the augmentations and transfrom in torch tensor
+        roi_x, roi_entire_mask, roi_mask, class_code_images = self.transform_pre(roi_x, roi_entire_mask, roi_mask,
+                                                                                 roi_GT_img)
+        # for single obj, only one gt
+        return roi_x, roi_entire_mask, roi_mask, R, t, Bbox, class_code_images, cam_param
+
+    def transform_pre(self, sample_x, sample_entire_mask, sample_mask, gt_code):
+        composed_transforms_img = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+        ])
+
+        x_pil = Image.fromarray(np.uint8(sample_x)).convert('RGB')
+
+        sample_entire_mask = sample_entire_mask / 255.
+        sample_entire_mask = torch.from_numpy(sample_entire_mask).type(torch.float)
+        sample_mask = sample_mask / 255.
+        sample_mask = torch.from_numpy(sample_mask).type(torch.float)
+        gt_code = torch.from_numpy(gt_code).permute(2, 0, 1)
+
+        return composed_transforms_img(x_pil), sample_entire_mask, sample_mask, gt_code
+
+    def apply_augmentation(self, x):
+        augmentations = GDR_Net_Augmentation.build_augmentations(self.use_peper_salt, self.use_motion_blur)
+        color_aug_prob = 0.8
+        if np.random.rand() < color_aug_prob:
+            x = augmentations.augment_image(x)
+
+        return x
