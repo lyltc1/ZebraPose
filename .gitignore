@@ -6,3 +6,4 @@ datasets/
 results/
 bop_toolkit/
 *log*
+*pybind11*
