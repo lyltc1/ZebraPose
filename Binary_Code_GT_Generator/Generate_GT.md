@@ -50,8 +50,13 @@ We write a easy renderer ourself because we need to set
 ### Requirments:
 - OpenGL
 - Eigen3
-- glfw3
+sudo ln -sf /usr/include/eigen3/Eigen /usr/include/Eigen
+sudo ln -sf /usr/include/eigen3/unsupported /usr/include/unsupported
+- glfw3 
+sudo apt-get install libglfw3-dev libglfw3
 - assimp (4.1)
+sudo apt-get install libassimp-dev
+sudo apt-get install assimp-utils
 - OpenCV
 
 
@@ -71,9 +76,10 @@ We write a easy renderer ourself because we need to set
 - `python3 setup.py build`
 - add the path (adjust the path, note that the name `lib.linux-x86_64-3.6` may different due to your machine or python version):  
 `export PYTHONPATH=$PYTHONPATH:/path/to/Binary_Code_GT_Generator/Render_GT_Color_Mesh_to_GT_Img/Render_Python_API/build/lib.linux-x86_64-3.6/`  
+`export PYTHONPATH=$PYTHONPATH:/home/lyltc/git/ZebraPose/Binary_Code_GT_Generator/Render_GT_Color_Mesh_to_GT_Img/Render_Python_API/build/lib.linux-x86_64-3.8/`
 and  
 `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/Binary_Code_GT_Generator/Render_GT_Color_Mesh_to_GT_Img/build`
-
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/lyltc/git/ZebraPose/Binary_Code_GT_Generator/Render_GT_Color_Mesh_to_GT_Img/build`
 
 ## Step 3: install the bop toolkit
 https://github.com/thodan/bop_toolkit
@@ -106,7 +112,7 @@ This scipt will create a folder "models_GT_color" under the dataset folder, and 
 All the preparations are done, this is the only thing that we need for the training.  
 
 use `generate_training_labels_for_BOP.py`, e.g. `python3 generate_training_labels_for_BOP.py --bop_path /home/ysu/data/data_object_pose/BOP_dataset/ --dataset_name lmo --force_rewrite True --is_training_data True --data_folder train_real --start_obj_id 0 --end_obj_id 3`
-
+`python3 generate_training_labels_for_BOP.py --bop_path /home/lyltc/git/BOP_DATASET --dataset_name ycbv_anno_myself --force_rewrite True --is_training_data True --data_folder train_pbr_tiny --start_obj_id 0 --end_obj_id 20`
 The args:
 - `bop_path`: bop root path
 - `dataset_name`: like lm, lmo...
