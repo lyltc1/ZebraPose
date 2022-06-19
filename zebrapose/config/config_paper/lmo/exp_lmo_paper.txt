@@ -33,7 +33,7 @@ concat_encoder_decoder = True
 
 
 #### check points
-load_checkpoint=False
+load_checkpoint=/root/ZebraPose/zebrapose/results/checkpoints/exp_lmo_paperholepuncher
 check_point_path=results/checkpoints/
 tensorboard_path=results/tensorboard_logs/runs/
 eval_output_path=results/evaluate_report
@@ -42,7 +42,7 @@ eval_output_path=results/evaluate_report
 
 #### optimizer
 optimizer_type = Adam
-learning_rate = 0.0002
+learning_rate = 0.000005
 batch_size = 32
 total_iteration = 380000
 
