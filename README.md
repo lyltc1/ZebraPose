@@ -49,6 +49,24 @@ Download with `git clone --recurse-submodules` so that `bop_toolkit` will also b
 
 5. (Optional) Instead of download the ground truth, you can also generate them from scratch, details in [`Generate_GT.md`](Binary_Code_GT_Generator/Generate_GT.md). 
 
+pip install imgaug
+pip install cyglfw3
+pip install pyassimp
+pip install mmcv
+termcolor
+chardet
+numba
+in order to solve problem "Error: BadWindow (invalid window parameter)"
+I find that new version matplotlib will cause problem,and do it 
+sudo apt-get install libjpeg-dev zlib1g-dev
+sudo apt-get install libopenexr-dev
+sudo apt-get install openexr
+sudo apt-get install python3-dev
+sudo apt-get install libglfw3-dev libglfw3
+sudo apt-get install libassimp-dev
+pip install matplotlib==3.1.3
+pip uninstall pillow
+CC="cc -mavx2" pip install -U --force-reinstall pillow-simd
 
 ### Training
 Adjust the paths in the config files, and train the network with `train.py`, e.g.
@@ -61,7 +79,7 @@ The script will save the last 3 checkpoints and the best checkpoint, as well as 
 For most datasets, a specific object occurs only once in a test images. 
 
 `python test.py --cfg config/config_BOP/lmo/exp_lmo_BOP.txt --obj_name ape --ckpt_file path/to/the/best/checkpoint --ignore_bit 0 --eval_output_path path/to/save/the/evaluation/report`
-
+`python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name bowl --ckpt_file /home/lyltc/git/ZebraPose/results/zebra_ckpts/paper/ycbv/bowl --eval_output_path /home/lyltc/git/ZebraPose/results --debug`
 For datasets like tless, the number of a a specific object is unknown in the test stage.
 
 `python test_vivo.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --ckpt_file path/to/the/best/checkpoint --ignore_bit 0 --obj_name obj01 --eval_output_path path/to/save/the/evaluation/report`
