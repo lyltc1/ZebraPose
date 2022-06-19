@@ -4,7 +4,7 @@
 #include <pybind11/numpy.h>
 #include <vector>
 #include <pybind11/eigen.h>
-#include <sophus/se3.hpp>
+
 #include <time.h>
 
 using namespace srt3d;
