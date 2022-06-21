@@ -4,19 +4,21 @@ import argparse
 
 sys.path.append("../zebrapose/tools_for_BOP")
 import bop_io
+from common_dataset_info import get_sym_obj_id
 
 import cv2
 import Render
 import numpy as np
 from tqdm import tqdm
 
-from modified_gt_pose import modified_gt_for_bowl
-from modified_gt_pose import modified_gt_for_large_marker
+from modified_gt_pose import modified_gt_for_symmetry
 
 
 def generate_GT_images(bop_path, dataset_name, force_rewrite, is_training_data, data_folder, start_obj_id, end_obj_id):
     dataset_dir, source_dir, model_plys, model_info, model_ids, rgb_files, depth_files, mask_files, mask_visib_files, gts, gt_infos, cam_param_global, scene_cam = bop_io.get_dataset(
         bop_path, dataset_name, train=is_training_data, incl_param=True, data_folder=data_folder)
+
+    sym_obj_id = get_sym_obj_id(dataset_name)
 
     target_dir = os.path.join(dataset_dir, data_folder + '_GT_v2')
 
@@ -34,10 +36,11 @@ def generate_GT_images(bop_path, dataset_name, force_rewrite, is_training_data, 
     Render.init(camera_parameters, 1)
     model_scale = 0.1
 
-    for model_to_render in range(start_obj_id, end_obj_id + 1):
+    # for model_to_render in range(start_obj_id, end_obj_id + 1):
+    for model_to_render in sym_obj_id:
         # only bind 1 model each time
-        model_to_render = int(model_to_render)
-        ply_fn = dataset_dir + "/models_GT_color/obj_{:06d}.ply".format(int(model_ids[model_to_render]))
+        assert model_to_render in model_ids
+        ply_fn = dataset_dir + "/models_GT_color/obj_{:06d}.ply".format(model_to_render)
         print("bind ", ply_fn, " to the render buffer position", 0)
         Render.bind_3D_model(ply_fn, 0, model_scale)
 
@@ -66,20 +69,20 @@ def generate_GT_images(bop_path, dataset_name, force_rewrite, is_training_data, 
             for count, gt in enumerate(gts[img_id]):
                 GT_img_fn = os.path.join(GT_img_dir, "{}_{:06d}.png".format(image_name, count))
 
-                obj_id_render = int(gt['obj_id'] - 1)
-                if obj_id_render != model_to_render:
+                if gt['obj_id'] != model_to_render:
                     continue
 
                 if os.path.exists(GT_img_fn) and not force_rewrite:
                     continue
                 else:
                     tra_pose = np.array(gt['cam_t_m2c'])
-                    tra_pose = tra_pose * model_scale
                     rot_pose = np.array(gt['cam_R_m2c'])
-                    if dataset_name == 'ycbv' and obj_id_render == 12:
-                        rot_pose, tra_pose = modified_gt_for_bowl(rot_pose, tra_pose)
-                    elif dataset_name == 'ycbv' and obj_id_render == 17:
-                        rot_pose, tra_pose = modified_gt_for_large_marker(rot_pose, tra_pose)
+
+                    if dataset_name == 'ycbv' and model_to_render in sym_obj_id:
+                        """ currently support for ycbv dataset """
+                        rot_pose, tra_pose = modified_gt_for_symmetry(rot_pose, tra_pose, model_info[str(model_to_render)])
+
+                    tra_pose = tra_pose * model_scale
                     rot_pose = rot_pose.flatten()
                     Render.render_GT_visible_side(tra_pose, rot_pose, 0, GT_img_fn)
 
