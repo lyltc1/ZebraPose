@@ -1,3 +1,7 @@
+""" usage:
+python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
+"""
+
 import os
 import sys
 import time
@@ -527,12 +531,10 @@ if __name__ == "__main__":
     parser.add_argument('--obj_name', type=str)
     parser.add_argument('--ckpt_file', type=str)
     parser.add_argument('--ignore_bit', default='0', type=str)
-    parser.add_argument('--eval_output_path', type=str)
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     config_file = args.cfg
     checkpoint_file = args.ckpt_file
-    eval_output_path = args.eval_output_path
     obj_name = args.obj_name
     debug = args.debug
     configs = parse_cfg(config_file)
