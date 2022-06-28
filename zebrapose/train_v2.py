@@ -1,4 +1,5 @@
 """python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
+"""CUDA_VISIBLE_DEVICES=0 python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block > log_wood_block_v2.txt"""
 import os
 import sys
 
