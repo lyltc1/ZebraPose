@@ -1,3 +1,5 @@
+""" """
+
 import os
 import sys
 import argparse
@@ -36,8 +38,8 @@ def generate_GT_images(bop_path, dataset_name, force_rewrite, is_training_data, 
     Render.init(camera_parameters, 1)
     model_scale = 0.1
 
-    # for model_to_render in range(start_obj_id, end_obj_id + 1):
-    for model_to_render in sym_obj_id:
+    for model_to_render in range(start_obj_id, end_obj_id + 1):
+    # for model_to_render in sym_obj_id:
         # only bind 1 model each time
         assert model_to_render in model_ids
         ply_fn = dataset_dir + "/models_GT_color/obj_{:06d}.ply".format(model_to_render)
@@ -78,7 +80,7 @@ def generate_GT_images(bop_path, dataset_name, force_rewrite, is_training_data, 
                     tra_pose = np.array(gt['cam_t_m2c'])
                     rot_pose = np.array(gt['cam_R_m2c'])
 
-                    if dataset_name == 'ycbv' and model_to_render in sym_obj_id:
+                    if model_to_render in sym_obj_id:
                         """ currently support for ycbv dataset """
                         rot_pose, tra_pose = modified_gt_for_symmetry(rot_pose, tra_pose, model_info[str(model_to_render)])
 

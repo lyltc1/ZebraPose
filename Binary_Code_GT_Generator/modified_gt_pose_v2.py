@@ -1,4 +1,4 @@
-""" modify gt to minimize |RS-I| """
+""" modify gt to minimize |RS-toward_me| """
 
 import numpy as np
 

@@ -35,10 +35,10 @@ def crop_resize_by_warp_affine(img, center, scale, output_size, rot=0, interpola
 
 def crop_square_resize(img, Bbox, crop_size=None, interpolation=None):
     x1 = Bbox[0]
-    bw = Bbox[2]
+    bw = max(Bbox[2], 0)
     x2 = Bbox[0] + bw
     y1 = Bbox[1]
-    bh = Bbox[3]
+    bh = max(Bbox[3], 0)
     y2 = Bbox[1] + bh
 
     bbox_center = np.array([0.5 * (x1 + x2), 0.5 * (y1 + y2)])
@@ -237,7 +237,7 @@ class bop_dataset_single_obj_pytorch(Dataset):
         scene_id = rgb_fn[-3]
         GT_image_name = mask_visib_fns[0].split("/")[-1]
         
-        GT_img_dir = os.path.join(self.dataset_dir, self.data_folder + '_GT', scene_id)
+        GT_img_dir = os.path.join(self.dataset_dir, self.data_folder + '_GT_v2', scene_id)
         GT_img_fn = os.path.join(GT_img_dir, GT_image_name)        
         GT_img = cv2.imread(GT_img_fn)
 
@@ -280,14 +280,22 @@ class bop_dataset_single_obj_pytorch(Dataset):
             if self.Detect_Bbox is not None:
                 # replace the Bbox with detected Bbox
                 Bbox = self.Detect_Bbox[index]
-                if Bbox is None:  # no valid detection, give a dummy input
+                if Bbox is None:
+                    # no valid detection, give a dummy input
                     roi_x = torch.zeros((3, self.crop_size_img, self.crop_size_img))
                     roi_GT_img = torch.zeros((int(self.GT_code_infos[1]), int(self.crop_size_gt), int(self.crop_size_gt)))
                     roi_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
                     roi_entire_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
                     Bbox = np.array([0,0,0,0], dtype='int')
                     return roi_x, roi_entire_mask, roi_mask, R, t, Bbox, roi_GT_img, cam_param
-
+            if np.any(np.isclose(Bbox, np.array([-1,-1,-1,-1], dtype='int'))):
+                # no valid detection, give a dummy input
+                roi_x = torch.zeros((3, self.crop_size_img, self.crop_size_img))
+                roi_GT_img = torch.zeros((int(self.GT_code_infos[1]), int(self.crop_size_gt), int(self.crop_size_gt)))
+                roi_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
+                roi_entire_mask = torch.zeros((int(self.crop_size_gt), int(self.crop_size_gt)))
+                Bbox = np.array([0, 0, 0, 0], dtype='int')
+                return roi_x, roi_entire_mask, roi_mask, R, t, Bbox, roi_GT_img, cam_param
             if not os.path.exists(GT_img_fn):
                 # some test fold doesn't provide GT, fill GT with dummy value
                 GT_img = np.zeros(x.shape)

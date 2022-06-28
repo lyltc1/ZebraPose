@@ -1,5 +1,6 @@
 """ usage:
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
+python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
 """
 
 import os
@@ -470,6 +471,7 @@ def main(configs):
                         sum_correct = sum_correct + 1
                 AUC_ADY_error[batch_idx] = sum_correct/10
 
+    scores = [1 for x in range(len(estimated_Rs))]
     cvs_path = os.path.join(eval_output_path, 'pose_result_bop/')
     if not os.path.exists(cvs_path):
         os.makedirs(cvs_path)

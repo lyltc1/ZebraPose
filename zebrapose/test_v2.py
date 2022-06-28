@@ -292,7 +292,7 @@ def main(configs):
                     ##### visualize for debugging
                     #################################
                     debug_image_dir = os.path.abspath(
-                        os.path.join(PROJ_ROOT, ".cache/{}_refine_by_{}_{}/image_{}_{}".
+                        os.path.join(eval_output_path, "{}_refine_by_{}_{}/image_{}_{}".
                                      format(obj_name, configs.get('refine_entire_mask_type'),
                                      configs.get('refine_mask_type'), scene_ids[batch_idx], img_ids[batch_idx])))
                     if debug:
@@ -421,7 +421,7 @@ def main(configs):
                 adx_error = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
                 if np.isnan(adx_error):
                     adx_error = 10000
-                    
+
             if adx_error < obj_diameter*0.1:
                 ADX_passed[batch_idx] = 1
             if adx_error < obj_diameter*0.05:
