@@ -194,10 +194,13 @@ def main(configs):
     if torch.cuda.is_available():
         net=net.cuda()
 
+    optimizer = None
+    lr_scheduler = None
     if optimizer_type == 'SGD':
         optimizer=optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     elif optimizer_type == 'Adam':
         optimizer=optim.Adam(net.parameters(), lr=learning_rate)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
     else:
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
@@ -212,6 +215,7 @@ def main(configs):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         best_score = checkpoint['best_score']
         iteration_step = checkpoint['iteration_step']
+        lr_scheduler.load_state_dict(checkpoint['lr_scheduler_state_dict'])
 
     # train the network
     while True:
@@ -275,7 +279,8 @@ def main(configs):
             # test the trained CNN
             log_freq = 1000
 
-            if iteration_step % log_freq == 0 :
+            if (iteration_step + 1) % log_freq == 0:
+                lr_scheduler.step()
                 if binarycode_loss.histogram is not None:
                     np.set_printoptions(formatter={'float': lambda x: "{0:.2f}".format(x)})
                     print('Train err:{}'.format(binarycode_loss.histogram.detach().cpu().numpy()))
@@ -283,7 +288,7 @@ def main(configs):
                 pred_masks = from_output_to_class_mask(pred_mask_prob) 
                 pred_codes = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
                     
-                save_checkpoint(check_point_path, net, iteration_step, best_score, optimizer, 3)
+                save_checkpoint(check_point_path, net, iteration_step, best_score, optimizer, lr_scheduler, 3)
 
                 pred_codes = pred_codes.transpose(0, 2, 3, 1)
 
@@ -329,7 +334,7 @@ def main(configs):
                 if ADD_passed >= best_score:
                     best_score = ADD_passed
                     print("best_score", best_score)
-                    save_best_checkpoint(best_score_path, net, optimizer, best_score, iteration_step)
+                    save_best_checkpoint(best_score_path, net, optimizer, lr_scheduler, best_score, iteration_step)
 
             iteration_step = iteration_step + 1
             if iteration_step >=total_iteration:

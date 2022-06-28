@@ -1,7 +1,7 @@
 import torch 
 import os
 
-def save_checkpoint(path, net, iteration_step, best_score, optimizer, max_to_keep):
+def save_checkpoint(path, net, iteration_step, best_score, optimizer, lr_scheduler, max_to_keep):
     if not os.path.isdir(path):
         os.makedirs(path)
     saved_ckpt = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
@@ -17,7 +17,8 @@ def save_checkpoint(path, net, iteration_step, best_score, optimizer, max_to_kee
                 'model_state_dict': net.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'iteration_step': iteration_step,
-                'best_score': best_score
+                'best_score': best_score,
+                'lr_scheduler_state_dict': lr_scheduler.state_dict(),
                 }, 
                 os.path.join(path, str(iteration_step))
             )
@@ -28,7 +29,7 @@ def get_checkpoint(path):
     saved_ckpt.sort()
     return os.path.join(path, str(saved_ckpt[-1]))
 
-def save_best_checkpoint(best_score_path, net, optimizer, best_score, iteration_step):
+def save_best_checkpoint(best_score_path, net, optimizer, lr_scheduler, best_score, iteration_step):
     saved_ckpt = [f for f in os.listdir(best_score_path) if os.path.isfile(os.path.join(best_score_path, f))]
     if saved_ckpt != []:
         os.remove(os.path.join(best_score_path, saved_ckpt[0]))
@@ -42,7 +43,8 @@ def save_best_checkpoint(best_score_path, net, optimizer, best_score, iteration_
             'model_state_dict': net.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'best_score': best_score,
-            'iteration_step': iteration_step
+            'iteration_step': iteration_step,
+            'lr_scheduler_state_dict': lr_scheduler.state_dict(),
         }, 
         os.path.join(best_score_path, best_score_file_name)
     )
