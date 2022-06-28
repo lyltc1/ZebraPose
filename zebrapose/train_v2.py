@@ -23,7 +23,7 @@ from model.BinaryCodeNet import MaskLoss, BinaryCodeLoss
 
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import save_checkpoint, get_checkpoint, save_best_checkpoint
+from utils_v2 import save_checkpoint, get_checkpoint, save_best_checkpoint
 from metric import Calculate_ADD_Error_BOP, Calculate_ADI_Error_BOP
 
 from get_detection_results import get_detection_results, ycbv_select_keyframe
@@ -200,7 +200,7 @@ def main(configs):
         optimizer=optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     elif optimizer_type == 'Adam':
         optimizer=optim.Adam(net.parameters(), lr=learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.9)
     else:
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
