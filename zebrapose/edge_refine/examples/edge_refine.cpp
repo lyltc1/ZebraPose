@@ -42,8 +42,10 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
   renderer_geometry_ptr->SetUp(); // Set up GLFW
   renderer_geometry_ptr->AddBody(body_ptr);
   // 设置renderer
+// for lmo
 //  Intrinsics intrinsics{572.41140, 573.57043, 325.26110,
 //                        242.04899, 640, 480};
+// for ycbv
   Intrinsics intrinsics{1066.778, 1067.487, 312.9869, 241.3109, 640, 480};
   float z_min = 0.001f;
   float z_max = 50.0f;

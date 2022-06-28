@@ -1,3 +1,8 @@
+""" usage:
+python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
+python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
+"""
+
 import os
 import sys
 import time
@@ -466,6 +471,7 @@ def main(configs):
                         sum_correct = sum_correct + 1
                 AUC_ADY_error[batch_idx] = sum_correct/10
 
+    scores = [1 for x in range(len(estimated_Rs))]
     cvs_path = os.path.join(eval_output_path, 'pose_result_bop/')
     if not os.path.exists(cvs_path):
         os.makedirs(cvs_path)
@@ -527,12 +533,10 @@ if __name__ == "__main__":
     parser.add_argument('--obj_name', type=str)
     parser.add_argument('--ckpt_file', type=str)
     parser.add_argument('--ignore_bit', default='0', type=str)
-    parser.add_argument('--eval_output_path', type=str)
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     config_file = args.cfg
     checkpoint_file = args.ckpt_file
-    eval_output_path = args.eval_output_path
     obj_name = args.obj_name
     debug = args.debug
     configs = parse_cfg(config_file)

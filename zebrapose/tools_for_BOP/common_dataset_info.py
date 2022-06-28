@@ -113,3 +113,12 @@ def get_obj_info(dataset_name):
     if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl']:
         raise AssertionError("dataset name unknow")
     return eval("{}_obj_name_obj_id".format(dataset_name)), eval("{}_symmetry_obj".format(dataset_name))
+
+
+def get_sym_obj_id(dataset_name):
+    if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl']:
+        raise AssertionError("dataset name unknow")
+    obj_name_obj_id = eval("{}_obj_name_obj_id".format(dataset_name))
+    symmetry_obj = eval("{}_symmetry_obj".format(dataset_name))
+    sym_obj_id = [obj_name_obj_id[name] for name in symmetry_obj]
+    return sym_obj_id
