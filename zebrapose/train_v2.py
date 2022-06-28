@@ -1,3 +1,4 @@
+"""python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
 import os
 import sys
 
