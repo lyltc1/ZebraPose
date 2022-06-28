@@ -60,7 +60,8 @@ def modified_gt_for_symmetry(rot_pose, tra_pose, model_info):
                 best_t = t
         tra_pose = rot_pose.dot(best_t) + tra_pose
         rot_pose = rot_pose.dot(best_R)
-
+    elif (not 'symmetries_discrete' in model_info) and (not 'symmetries_continuous' in model_info):
+        return rot_pose, tra_pose
     else:
         raise NotImplementedError
     return rot_pose, tra_pose
