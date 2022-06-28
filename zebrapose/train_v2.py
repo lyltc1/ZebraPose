@@ -201,7 +201,7 @@ def main(configs):
         optimizer=optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     elif optimizer_type == 'Adam':
         optimizer=optim.Adam(net.parameters(), lr=learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.9)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.7)
     else:
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
@@ -281,7 +281,7 @@ def main(configs):
             log_freq = 1000
 
             if (iteration_step + 1) % log_freq == 0:
-                lr_scheduler.step()
+                
                 if binarycode_loss.histogram is not None:
                     np.set_printoptions(formatter={'float': lambda x: "{0:.2f}".format(x)})
                     print('Train err:{}'.format(binarycode_loss.histogram.detach().cpu().numpy()))
@@ -326,8 +326,10 @@ def main(configs):
                 ADD_passed = np.mean(ADD_passed)
                 ADD_error= np.mean(ADD_error)
 
+                lr_scheduler.step()
                 writer.add_scalar('TRAIN_ADD/ADD_Train', ADD_passed, iteration_step)
                 writer.add_scalar('TRAIN_ADD/ADD_Error_Train', ADD_error, iteration_step)
+                writer.add_scalar('learning rate', optimizer.param_groups[0]['lr'], iteration_step)
                 
     
                 ADD_passed = test_network_with_single_obj(net, test_loader, obj_diameter, writer, dict_class_id_3D_points, vertices, iteration_step, configs, 0,calc_add_and_adi=False)
