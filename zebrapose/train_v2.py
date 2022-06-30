@@ -202,7 +202,7 @@ def main(configs):
         optimizer=optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     elif optimizer_type == 'Adam':
         optimizer=optim.Adam(net.parameters(), lr=learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.7)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=1)
     else:
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
