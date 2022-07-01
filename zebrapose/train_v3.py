@@ -362,8 +362,8 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    check_point_path = check_point_path + config_file_name + args.obj_name
-    tensorboard_path = tensorboard_path + config_file_name + args.obj_name
+    check_point_path = check_point_path + config_file_name + args.obj_name + '_v3'
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v3'
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 
