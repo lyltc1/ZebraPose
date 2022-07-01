@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 from model.aspp import ASPP
-from model.aspp_v3 import ASPP_V3
+from model.aspp_v3 import ASPP_v3
 from model.resnet import ResNet50_OS8, ResNet34_OS8
 
 #################### loss ######################
@@ -152,7 +152,7 @@ class DeepLabV3(nn.Module):
         if num_resnet_layers == 34:
             self.resnet = ResNet34_OS8(34, concat) # NOTE! specify the type of ResNet here
             self.aspp = ASPP(num_classes=self.num_classes, concat=concat, output_kernel_size=output_kernel_size)
-        self.aspp_v3 = ASPP_V3(num_classes=1, concat=concat, output_kernel_size=output_kernel_size)
+        self.aspp_v3 = ASPP_v3(num_classes=1, concat=concat, output_kernel_size=output_kernel_size)
 
     def forward(self, x):
         # (x has shape (batch_size, 3, h, w))
