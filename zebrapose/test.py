@@ -314,12 +314,12 @@ def main(configs):
                         renderer = Renderer(model_plys.values(),
                                             vertex_tmp_store_folder=os.path.join(PROJ_ROOT, ".cache"),
                                             vertex_scale=0.001)
-                        predict_img, predict_depth = renderer.render(obj_id, 640, 480, cam_K, R_predict, t_predict / 1000., 0.25, 6.0)
+                        predict_img, predict_depth = renderer.render(obj_id, cam_param_global['im_size'][0], cam_param_global['im_size'][1], cam_K, R_predict, t_predict / 1000., 0.25, 6.0)
                         predict_img = get_roi(predict_img, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR, resize_method=resize_method)
                         predict_depth = get_roi(predict_depth, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR, resize_method=resize_method)
                         predict_depth = (predict_depth > 0).astype("uint8")
 
-                        predict_img_refine, predict_depth_refine = renderer.render(obj_id, 640, 480, cam_K, R_predict_refine, t_predict_refine / 1000., 0.25, 6.0)
+                        predict_img_refine, predict_depth_refine = renderer.render(obj_id, cam_param_global['im_size'][0], cam_param_global['im_size'][1], cam_K, R_predict_refine, t_predict_refine / 1000., 0.25, 6.0)
                         predict_img_refine = get_roi(predict_img_refine, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR,resize_method=resize_method)
                         predict_depth_refine = get_roi(predict_depth_refine, Bbox, BoundingBox_CropSize_GT, interpolation=cv2.INTER_LINEAR,resize_method=resize_method)
                         predict_depth_refine = (predict_depth_refine > 0).astype("uint8")
