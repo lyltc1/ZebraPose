@@ -1,5 +1,8 @@
-"""python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
-"""CUDA_VISIBLE_DEVICES=0 python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block > log_wood_block_v2.txt"""
+""" train_v4 with GT_v1 and net_v3 """
+""" python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
+""" CUDA_VISIBLE_DEVICES=0 python train_v4.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block > log_wood_block_v4.txt"""
+""" CUDA_VISIBLE_DEVICES=0 python train_v4.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 > log_wood_block_v4.txt"""
+
 import os
 import sys
 
@@ -10,7 +13,7 @@ import argparse
 
 from tools_for_BOP import bop_io
 from tools_for_BOP.common_dataset_info import get_obj_info
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch_v2
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch
 
 import torch
 from torch import optim
@@ -110,7 +113,7 @@ def main(configs):
     ########################## define data loader
     batch_size_1_dataset, batch_size_2_dataset = get_batch_size(second_dataset_ratio, batch_size)
 
-    train_dataset = bop_dataset_single_obj_pytorch_v2(
+    train_dataset = bop_dataset_single_obj_pytorch(
                                                     dataset_dir, training_data_folder, rgb_files[obj_id], mask_files[obj_id], mask_visib_files[obj_id], 
                                                     gts[obj_id], gt_infos[obj_id], cam_params[obj_id], True, BoundingBox_CropSize_image, 
                                                     BoundingBox_CropSize_GT, GT_code_infos,  padding_ratio=padding_ratio, resize_method=resize_method, 
@@ -120,7 +123,7 @@ def main(configs):
 
     if training_data_folder_2 != 'none':
         dataset_dir_pbr,_,_,_,_,rgb_files_pbr,_,mask_files_pbr,mask_visib_files_pbr,gts_pbr,gt_infos_pbr,_, camera_params_pbr = bop_io.get_dataset(bop_path, dataset_name, train=True, data_folder=training_data_folder_2, data_per_obj=True, incl_param=True, train_obj_visible_theshold=train_obj_visible_theshold)
-        train_dataset_2 = bop_dataset_single_obj_pytorch_v2(
+        train_dataset_2 = bop_dataset_single_obj_pytorch(
                                                         dataset_dir_pbr, training_data_folder_2, rgb_files_pbr[obj_id], mask_files_pbr[obj_id], mask_visib_files_pbr[obj_id], 
                                                         gts_pbr[obj_id], gt_infos_pbr[obj_id], camera_params_pbr[obj_id], True, 
                                                         BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
@@ -162,7 +165,7 @@ def main(configs):
     else:
         Det_Bbox = None
 
-    test_dataset = bop_dataset_single_obj_pytorch_v2(
+    test_dataset = bop_dataset_single_obj_pytorch(
                                             dataset_dir_test, val_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id], 
                                             test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False, 
                                             BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
@@ -362,8 +365,8 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    check_point_path = check_point_path + config_file_name + args.obj_name + '_v3'
-    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v3'
+    check_point_path = check_point_path + config_file_name + args.obj_name + '_v4'
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v4'
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 

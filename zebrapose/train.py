@@ -238,7 +238,7 @@ def main(configs):
                 entire_masks=entire_masks.cuda()
                 masks = masks.cuda()
                 class_code_images = class_code_images.cuda()
-         
+
             optimizer.zero_grad()
             if data.shape[0]!= batch_size:
                 raise ValueError(f"batch size wrong")
@@ -352,8 +352,8 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    check_point_path = check_point_path + config_file_name
-    tensorboard_path = tensorboard_path + config_file_name
+    check_point_path = check_point_path + config_file_name + args.obj_name + '_v1'
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v1'
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 
