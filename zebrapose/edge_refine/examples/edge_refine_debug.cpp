@@ -20,7 +20,7 @@ std::vector<double> modify(const std::vector<double>& input)
   return output;
 }
 
-void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float> visible_contours, std::string ply_path_, std::string save_path_prefix){
+void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, float fx, float fy, float cx, float cy, float width, float height, const std::vector<float> visible_contours, std::string ply_path_, std::string save_path_prefix){
   clock_t start = clock(); //TODO 耗时测试
   // ply的路径
   std::filesystem::path ply_path{ply_path_};
@@ -46,7 +46,10 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
 //  Intrinsics intrinsics{572.41140, 573.57043, 325.26110,
 //                        242.04899, 640, 480};
 // for ycbv
-  Intrinsics intrinsics{1066.778, 1067.487, 312.9869, 241.3109, 640, 480};
+//  Intrinsics intrinsics{1066.778, 1067.487, 312.9869, 241.3109, 640, 480};
+  // for tless
+  Intrinsics intrinsics{fx, fy, cx, cy, width, height};
+
   float z_min = 0.001f;
   float z_max = 50.0f;
   auto renderer_ptr= std::make_shared<NormalRenderer>(
@@ -182,7 +185,7 @@ void edge_refine(Eigen::Matrix3f &R, Eigen::Vector3f &t, const std::vector<float
 namespace py = pybind11;
 
 // wrap C++ function with NumPy array IO
-py::tuple py_edge_refine(Eigen::Matrix3f R, Eigen::Vector3f t,
+py::tuple py_edge_refine(Eigen::Matrix3f R, Eigen::Vector3f t, float fx, float fy, float cx, float cy, int width, int height,
                     py::array_t<float, py::array::c_style | py::array::forcecast> contours_, std::string ply_path, std::string path_for_save){
   // check input dimensions
   if ( contours_.ndim()     != 2 )
@@ -194,7 +197,7 @@ py::tuple py_edge_refine(Eigen::Matrix3f R, Eigen::Vector3f t,
   std::memcpy(contours.data(),contours_.data(),contours_.size()*sizeof(float));
 
   // call pure C++ function
-  edge_refine(R, t, contours, ply_path, path_for_save);
+  edge_refine(R, t, fx, fy, cx, cy, width, height, contours, ply_path, path_for_save);
   py::tuple outputs = py::make_tuple(R, t);
   return outputs;
 }

@@ -308,8 +308,10 @@ def main(configs):
                                 visible_contour = np.append(visible_contour, contour[i], axis=0)
                     visible_contour = mapping_pixel_position_to_original_position(visible_contour, Bbox, BoundingBox_CropSize_GT)
                     add_err_before_refine = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
-                    R_predict_refine, t_predict_refine = py_edge_refine(R_predict, t_predict / 1000., visible_contour, mesh_path,
-                                                          debug_image_dir)
+                    R_predict_refine, t_predict_refine = py_edge_refine(R_predict, t_predict / 1000.,
+                                                         cam_K[0,0].item(),cam_K[1,1].item(),cam_K[0,2].item(),cam_K[1,2].item(),
+                                                         cam_param_global['im_size'][0], cam_param_global['im_size'][1],
+                                                         visible_contour, mesh_path, debug_image_dir)
                     t_predict_refine = t_predict_refine.reshape(3, 1) * 1000.
 
                     if debug:
