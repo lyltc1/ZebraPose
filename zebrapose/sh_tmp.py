@@ -47,4 +47,4 @@ os.system(
 os.system(
     'CUDA_VISIBLE_DEVICES=1 python train_v4.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 > log_obj04_v4.txt')
 os.system(
-    'CUDA_VISIBLE_DEVICES=2 python train_v4.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker.txt')
+    'CUDA_VISIBLE_DEVICES=2 python train_v4.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v4.txt')

@@ -237,7 +237,7 @@ class bop_dataset_single_obj_pytorch(Dataset):
         scene_id = rgb_fn[-3]
         GT_image_name = mask_visib_fns[0].split("/")[-1]
         
-        GT_img_dir = os.path.join(self.dataset_dir, self.data_folder + '_GT_v2', scene_id)
+        GT_img_dir = os.path.join(self.dataset_dir, self.data_folder + '_GT', scene_id)
         GT_img_fn = os.path.join(GT_img_dir, GT_image_name)        
         GT_img = cv2.imread(GT_img_fn)
 
