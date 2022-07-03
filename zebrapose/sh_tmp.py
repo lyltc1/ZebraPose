@@ -48,3 +48,6 @@ os.system(
     'CUDA_VISIBLE_DEVICES=1 python train_v4.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 > log_obj04_v4.txt')
 os.system(
     'CUDA_VISIBLE_DEVICES=2 python train_v4.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v4.txt')
+
+CUDA_VISIBLE_DEVICES=0,1 python -u train_v5.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj03 --multiprocessing-distributed --world-size 1 --rank 0 > tmp_shuangka.txt
+ CUDA_VISIBLE_DEVICES=2 python -u train_v5.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj03 > tmp_danka.txt

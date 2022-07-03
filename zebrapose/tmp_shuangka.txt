@@ -1,0 +1,429 @@
+refine  :  True
+refine_entire_mask_type  :  gt_entire_mask
+refine_mask_type  :  gt_mask
+bop_challange  :  True
+bop_path  :  /root/ZebraPose/datasets/BOP_DATASETS
+dataset_name  :  tless
+training_data_folder  :  train_real
+training_data_folder_2  :  train_pbr
+val_folder  :  test_primesense_bop
+test_folder  :  test_primesense_bop
+second_dataset_ratio  :  0.9375
+num_workers  :  8
+train_obj_visible_theshold  :  0.2
+BoundingBox_CropSize_image  :  256
+BoundingBox_CropSize_GT  :  128
+BinaryCode_Loss_Type  :  BCE
+mask_binary_code_loss  :  True
+predict_entire_mask  :  False
+use_histgramm_weighted_binary_loss  :  True
+output_kernel_size  :  1
+resnet_layer  :  34
+concat_encoder_decoder  :  True
+load_checkpoint  :  False
+check_point_path  :  results/checkpoints/exp_tless_BOPobj03_v5_2022-07-04 01:47:22
+tensorboard_path  :  results/tensorboard_logs/runs/exp_tless_BOPobj03_v5_2022-07-04 01:47:22
+eval_output_path  :  results/evaluate_report/
+optimizer_type  :  Adam
+learning_rate  :  0.0002
+batch_size  :  16
+total_iteration  :  380000
+binary_loss_weight  :  3
+Detection_reaults  :  detection_results/tless/fcos_V57eSE_MSx1333_ColorAugAAEWeaker_8e_tless_real_pbr.json
+padding_ratio  :  1.5
+resize_method  :  crop_square_resize
+use_peper_salt  :  True
+use_motion_blur  :  True
+divide_number_each_itration  :  2
+number_of_itration  :  16
+obj_name  :  obj03
+config_file_name  :  exp_tless_BOP
+Use GPU: 0 for training
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000001.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000002.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000003.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000004.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000005.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000006.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000007.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000008.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000009.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000010.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000011.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000012.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000013.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000014.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000015.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000016.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000017.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000018.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000019.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000020.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000021.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000022.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000023.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000024.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000025.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000026.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000027.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000028.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000029.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000030.ply
+if models are not fully listed above, please make sure there are ply files available
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000003.ply
+obj_diameter 65.3491
+training_data_folder image example: /root/ZebraPose/datasets/BOP_DATASETS/tless/train_real/000003/rgb/000000.png
+Use GPU: 1 for training
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000001.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000002.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000003.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000004.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000005.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000006.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000007.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000008.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000009.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000010.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000011.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000012.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000013.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000014.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000015.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000016.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000017.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000018.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000019.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000020.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000021.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000022.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000023.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000024.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000025.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000026.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000027.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000028.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000029.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000030.ply
+if models are not fully listed above, please make sure there are ply files available
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000001.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000002.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000003.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000004.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000005.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000006.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000007.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000008.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000009.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000010.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000011.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000012.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000013.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000014.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000015.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000016.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000017.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000018.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000019.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000020.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000021.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000022.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000023.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000024.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000025.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000026.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000027.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000028.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000029.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000030.ply
+if models are not fully listed above, please make sure there are ply files available
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000001.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000002.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000003.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000004.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000005.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000006.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000007.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000008.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000009.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000010.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000011.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000012.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000013.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000014.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000015.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000016.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000017.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000018.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000019.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000020.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000021.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000022.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000023.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000024.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000025.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000026.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000027.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000028.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000029.ply
+/root/ZebraPose/datasets/BOP_DATASETS/tless/models/obj_000030.ply
+if models are not fully listed above, please make sure there are ply files available
+training_data_folder_2 image example: /root/ZebraPose/datasets/BOP_DATASETS/tless/train_pbr/000000/rgb/000050.jpg
+get_bop_challange_test_data
+len(test_rgb_files) 197
+test_rgb_file exsample /root/ZebraPose/datasets/BOP_DATASETS/tless/test_primesense_bop/000007/rgb/000003.png
+number of test images:  197
+get_bop_challange_test_data
+pretrained resnet, 34
+using DDP.
+binary_code_length:  16
+pretrained resnet, 34
+using DDP.
+exp_tless_BOP  iteration_step: 0 loss_b: 0.6617860818737176 loss_m: 0.5142148733139038 loss_em: 0.5208464860916138 loss: 3.02041960502667
+rank: 1: ADD_passed: 0.03125, ADD_error: 293.82155460741455
+test dataset
+Train err:[0.30 0.37 0.50 0.42 0.31 0.72 0.29 0.52 0.34 0.18 0.33 0.48 0.32 0.29
+ 0.19 0.31]
+rank: 0: ADD_passed: 0.03125, ADD_error: 293.82155460741455
+test dataset
+ADD_passed 0.0 args.rank 0
+best_score 0.0
+best check point saved in  results/checkpoints/exp_tless_BOPobj03_v5_2022-07-04 01:47:22/best_score/0_0000step0
+exp_tless_BOP  iteration_step: 1 loss_b: 0.6587569205814853 loss_m: 0.4995576739311218 loss_em: 0.4096139073371887 loss: 2.8854423430127665
+exp_tless_BOP  iteration_step: 2 loss_b: 0.6876251021686033 loss_m: 0.3575092852115631 loss_em: 0.2999110221862793 loss: 2.7202956139036525
+exp_tless_BOP  iteration_step: 3 loss_b: 0.6946700523673389 loss_m: 0.29747653007507324 loss_em: 0.26796191930770874 loss: 2.649448606484799
+exp_tless_BOP  iteration_step: 4 loss_b: 0.6912759093267452 loss_m: 0.24893099069595337 loss_em: 0.24515146017074585 loss: 2.567910178846935
+exp_tless_BOP  iteration_step: 5 loss_b: 0.6881702028818547 loss_m: 0.21908524632453918 loss_em: 0.2312377393245697 loss: 2.514833594294673
+exp_tless_BOP  iteration_step: 6 loss_b: 0.6909273996356998 loss_m: 0.22686263918876648 loss_em: 0.22426699101924896 loss: 2.523911829115115
+exp_tless_BOP  iteration_step: 7 loss_b: 0.6877600517081053 loss_m: 0.22788316011428833 loss_em: 0.22934463620185852 loss: 2.5205079514404627
+exp_tless_BOP  iteration_step: 8 loss_b: 0.6819596871446528 loss_m: 0.21116286516189575 loss_em: 0.2161121964454651 loss: 2.4731541230413194
+exp_tless_BOP  iteration_step: 9 loss_b: 0.683087109024494 loss_m: 0.22384808957576752 loss_em: 0.25072234869003296 loss: 2.5238317653392826
+exp_tless_BOP  iteration_step: 10 loss_b: 0.6827002913862003 loss_m: 0.1970215141773224 loss_em: 0.21952447295188904 loss: 2.4646468612878123
+exp_tless_BOP  iteration_step: 11 loss_b: 0.6838783595003709 loss_m: 0.1842268854379654 loss_em: 0.1807345449924469 loss: 2.416596508931525
+exp_tless_BOP  iteration_step: 12 loss_b: 0.6917191475694312 loss_m: 0.17449867725372314 loss_em: 0.17904523015022278 loss: 2.4287013501122394
+exp_tless_BOP  iteration_step: 13 loss_b: 0.6881431375404155 loss_m: 0.17515835165977478 loss_em: 0.17978352308273315 loss: 2.419371287363754
+exp_tless_BOP  iteration_step: 14 loss_b: 0.6890570974676773 loss_m: 0.18451443314552307 loss_em: 0.16852755844593048 loss: 2.420213283994485
+exp_tless_BOP  iteration_step: 15 loss_b: 0.6819365113280066 loss_m: 0.18767446279525757 loss_em: 0.2020750641822815 loss: 2.435559060961559
+exp_tless_BOP  iteration_step: 16 loss_b: 0.687912472619264 loss_m: 0.17770260572433472 loss_em: 0.16303271055221558 loss: 2.4044727341343424
+exp_tless_BOP  iteration_step: 17 loss_b: 0.6836912664205747 loss_m: 0.16786041855812073 loss_em: 0.19006429612636566 loss: 2.4089985139462105
+exp_tless_BOP  iteration_step: 18 loss_b: 0.6895560460378553 loss_m: 0.14004658162593842 loss_em: 0.13423201441764832 loss: 2.3429467341571524
+exp_tless_BOP  iteration_step: 19 loss_b: 0.6842538914656883 loss_m: 0.13496068120002747 loss_em: 0.15083250403404236 loss: 2.3385548596311345
+exp_tless_BOP  iteration_step: 20 loss_b: 0.6884386476097742 loss_m: 0.1565084457397461 loss_em: 0.16367007791996002 loss: 2.3854944664890287
+exp_tless_BOP  iteration_step: 21 loss_b: 0.690851123889042 loss_m: 0.13851074874401093 loss_em: 0.161222904920578 loss: 2.372287025331715
+exp_tless_BOP  iteration_step: 22 loss_b: 0.6922615065838449 loss_m: 0.1613849252462387 loss_em: 0.1492701917886734 loss: 2.3874396367864468
+exp_tless_BOP  iteration_step: 23 loss_b: 0.6929906845885276 loss_m: 0.1445847600698471 loss_em: 0.15154361724853516 loss: 2.375100431083965
+exp_tless_BOP  iteration_step: 24 loss_b: 0.6865959625860475 loss_m: 0.16724753379821777 loss_em: 0.17153213918209076 loss: 2.398567560738451
+exp_tless_BOP  iteration_step: 25 loss_b: 0.68779779712766 loss_m: 0.18644843995571136 loss_em: 0.18445369601249695 loss: 2.434295527351188
+exp_tless_BOP  iteration_step: 26 loss_b: 0.6860064131684287 loss_m: 0.13982513546943665 loss_em: 0.163814976811409 loss: 2.3616593517861317
+exp_tless_BOP  iteration_step: 27 loss_b: 0.6799992328618019 loss_m: 0.1398068070411682 loss_em: 0.15370678901672363 loss: 2.3335112946432974
+exp_tless_BOP  iteration_step: 28 loss_b: 0.6822440628756948 loss_m: 0.1389513611793518 loss_em: 0.16234533488750458 loss: 2.348028884693941
+exp_tless_BOP  iteration_step: 29 loss_b: 0.6889096450681287 loss_m: 0.14668700098991394 loss_em: 0.14363723993301392 loss: 2.357053176127314
+exp_tless_BOP  iteration_step: 30 loss_b: 0.6835564422161159 loss_m: 0.1323484480381012 loss_em: 0.15781909227371216 loss: 2.340836866960161
+exp_tless_BOP  iteration_step: 31 loss_b: 0.6851577467404136 loss_m: 0.14947858452796936 loss_em: 0.14664016664028168 loss: 2.351591991389492
+exp_tless_BOP  iteration_step: 32 loss_b: 0.6910833354775916 loss_m: 0.11978500336408615 loss_em: 0.1187560185790062 loss: 2.3117910283758674
+exp_tless_BOP  iteration_step: 33 loss_b: 0.6917526382635587 loss_m: 0.12691843509674072 loss_em: 0.13288399577140808 loss: 2.335060345658825
+exp_tless_BOP  iteration_step: 34 loss_b: 0.6902723671195877 loss_m: 0.13422062993049622 loss_em: 0.11675368249416351 loss: 2.321791413783423
+exp_tless_BOP  iteration_step: 35 loss_b: 0.6879081364288339 loss_m: 0.12505488097667694 loss_em: 0.12334389239549637 loss: 2.312123182658675
+exp_tless_BOP  iteration_step: 36 loss_b: 0.6875357627009419 loss_m: 0.12828388810157776 loss_em: 0.12276740372180939 loss: 2.3136585799262126
+exp_tless_BOP  iteration_step: 37 loss_b: 0.6871454365108074 loss_m: 0.10950452834367752 loss_em: 0.11327418684959412 loss: 2.284215024725694
+exp_tless_BOP  iteration_step: 38 loss_b: 0.6875414458889243 loss_m: 0.11459821462631226 loss_em: 0.11625513434410095 loss: 2.293477686637186
+exp_tless_BOP  iteration_step: 39 loss_b: 0.6871500958915745 loss_m: 0.09977391362190247 loss_em: 0.13870230317115784 loss: 2.2999265044677837
+exp_tless_BOP  iteration_step: 40 loss_b: 0.6840839424093312 loss_m: 0.12090036273002625 loss_em: 0.13346467912197113 loss: 2.306616869079991
+exp_tless_BOP  iteration_step: 41 loss_b: 0.6874873507502378 loss_m: 0.11883953213691711 loss_em: 0.12815164029598236 loss: 2.309453224683613
+exp_tless_BOP  iteration_step: 42 loss_b: 0.6897699105947633 loss_m: 0.10563064366579056 loss_em: 0.10898776352405548 loss: 2.283928138974136
+exp_tless_BOP  iteration_step: 43 loss_b: 0.6869288971119112 loss_m: 0.10222238302230835 loss_em: 0.11889868229627609 loss: 2.281907756654318
+exp_tless_BOP  iteration_step: 44 loss_b: 0.6896856769713094 loss_m: 0.0900954008102417 loss_em: 0.10224860161542892 loss: 2.261401033339599
+exp_tless_BOP  iteration_step: 45 loss_b: 0.6890975251618405 loss_m: 0.13517123460769653 loss_em: 0.13558802008628845 loss: 2.3380518301795066
+exp_tless_BOP  iteration_step: 46 loss_b: 0.6903363294690649 loss_m: 0.1127166599035263 loss_em: 0.1267172396183014 loss: 2.3104428879290224
+exp_tless_BOP  iteration_step: 47 loss_b: 0.689158521686158 loss_m: 0.10727531462907791 loss_em: 0.122382752597332 loss: 2.2971336322848837
+exp_tless_BOP  iteration_step: 48 loss_b: 0.6901422510096523 loss_m: 0.1135168969631195 loss_em: 0.1383390873670578 loss: 2.322282737359134
+exp_tless_BOP  iteration_step: 49 loss_b: 0.6908810994061277 loss_m: 0.10609883069992065 loss_em: 0.1283571422100067 loss: 2.3070992711283105
+exp_tless_BOP  iteration_step: 50 loss_b: 0.6893435047935786 loss_m: 0.10227379202842712 loss_em: 0.12801790237426758 loss: 2.2983222087834307
+exp_tless_BOP  iteration_step: 51 loss_b: 0.6903664787746442 loss_m: 0.1198420450091362 loss_em: 0.12173844873905182 loss: 2.312679930072121
+exp_tless_BOP  iteration_step: 52 loss_b: 0.6911275186450772 loss_m: 0.1073913425207138 loss_em: 0.16493931412696838 loss: 2.345713212582914
+exp_tless_BOP  iteration_step: 53 loss_b: 0.6884952599256446 loss_m: 0.10102088749408722 loss_em: 0.11922840029001236 loss: 2.2857350675610335
+exp_tless_BOP  iteration_step: 54 loss_b: 0.69157342041168 loss_m: 0.09217332303524017 loss_em: 0.09645472466945648 loss: 2.2633483089397366
+exp_tless_BOP  iteration_step: 55 loss_b: 0.6904611134737962 loss_m: 0.10873962938785553 loss_em: 0.10733514279127121 loss: 2.2874581126005156
+exp_tless_BOP  iteration_step: 56 loss_b: 0.6921153374119888 loss_m: 0.08409427106380463 loss_em: 0.08686288446187973 loss: 2.247303167761651
+exp_tless_BOP  iteration_step: 57 loss_b: 0.6907515709763158 loss_m: 0.06667286902666092 loss_em: 0.07803048193454742 loss: 2.216958063890156
+exp_tless_BOP  iteration_step: 58 loss_b: 0.6875299030981358 loss_m: 0.10587999224662781 loss_em: 0.1499355137348175 loss: 2.3184052152758525
+exp_tless_BOP  iteration_step: 59 loss_b: 0.6900333457450876 loss_m: 0.10980493575334549 loss_em: 0.11180847138166428 loss: 2.2917134443702727
+exp_tless_BOP  iteration_step: 60 loss_b: 0.6904833102137394 loss_m: 0.07728301733732224 loss_em: 0.10775980353355408 loss: 2.2564927515120945
+exp_tless_BOP  iteration_step: 61 loss_b: 0.6882455823941116 loss_m: 0.08853790909051895 loss_em: 0.12035787850618362 loss: 2.273632534779037
+exp_tless_BOP  iteration_step: 62 loss_b: 0.691247274800108 loss_m: 0.08598968386650085 loss_em: 0.08640580624341965 loss: 2.2461373145102446
+exp_tless_BOP  iteration_step: 63 loss_b: 0.6912450826814095 loss_m: 0.06502003967761993 loss_em: 0.0790904238820076 loss: 2.217845711603856
+exp_tless_BOP  iteration_step: 64 loss_b: 0.6932287570148935 loss_m: 0.0974166989326477 loss_em: 0.13221755623817444 loss: 2.3093205262155028
+exp_tless_BOP  iteration_step: 65 loss_b: 0.691451037190753 loss_m: 0.08633147180080414 loss_em: 0.09611615538597107 loss: 2.256800738759034
+exp_tless_BOP  iteration_step: 66 loss_b: 0.6914562100316767 loss_m: 0.07984523475170135 loss_em: 0.08930055052042007 loss: 2.2435144153671516
+exp_tless_BOP  iteration_step: 67 loss_b: 0.6882922859974785 loss_m: 0.08687475323677063 loss_em: 0.11867471784353256 loss: 2.2704263290727384
+exp_tless_BOP  iteration_step: 68 loss_b: 0.6903443290952835 loss_m: 0.08143176883459091 loss_em: 0.08222445845603943 loss: 2.234689214576481
+exp_tless_BOP  iteration_step: 69 loss_b: 0.6905399170193334 loss_m: 0.0900903195142746 loss_em: 0.09388069063425064 loss: 2.255590761206525
+exp_tless_BOP  iteration_step: 70 loss_b: 0.6898927583227173 loss_m: 0.07276012748479843 loss_em: 0.0926755964756012 loss: 2.2351139989285516
+exp_tless_BOP  iteration_step: 71 loss_b: 0.6920191692492124 loss_m: 0.09515246748924255 loss_em: 0.10099464654922485 loss: 2.2722046217861047
+exp_tless_BOP  iteration_step: 72 loss_b: 0.6905282694105781 loss_m: 0.09243892133235931 loss_em: 0.08383773267269135 loss: 2.247861462236785
+exp_tless_BOP  iteration_step: 73 loss_b: 0.689855399626887 loss_m: 0.07209517061710358 loss_em: 0.10013480484485626 loss: 2.241796174342621
+exp_tless_BOP  iteration_step: 74 loss_b: 0.6912487923741532 loss_m: 0.07784438133239746 loss_em: 0.09703688323497772 loss: 2.2486276416898345
+exp_tless_BOP  iteration_step: 75 loss_b: 0.6914789336535936 loss_m: 0.07566768676042557 loss_em: 0.10736136138439178 loss: 2.257465849105598
+exp_tless_BOP  iteration_step: 76 loss_b: 0.6914528936895193 loss_m: 0.09590853750705719 loss_em: 0.10425738990306854 loss: 2.274524608478684
+exp_tless_BOP  iteration_step: 77 loss_b: 0.6884284407827085 loss_m: 0.10790747404098511 loss_em: 0.10770943760871887 loss: 2.2809022339978293
+exp_tless_BOP  iteration_step: 78 loss_b: 0.689701026415509 loss_m: 0.07300355285406113 loss_em: 0.08251078426837921 loss: 2.224617416368967
+exp_tless_BOP  iteration_step: 79 loss_b: 0.6882775120661911 loss_m: 0.06972090899944305 loss_em: 0.10300637036561966 loss: 2.2375598155636363
+exp_tless_BOP  iteration_step: 80 loss_b: 0.6915706044720608 loss_m: 0.0748969167470932 loss_em: 0.0919012576341629 loss: 2.2415099877974383
+exp_tless_BOP  iteration_step: 81 loss_b: 0.6914061329922832 loss_m: 0.059761300683021545 loss_em: 0.0871327668428421 loss: 2.221112466502713
+exp_tless_BOP  iteration_step: 82 loss_b: 0.6918011603663998 loss_m: 0.08089664578437805 loss_em: 0.12610116600990295 loss: 2.2824012928934803
+exp_tless_BOP  iteration_step: 83 loss_b: 0.691106167846612 loss_m: 0.07546025514602661 loss_em: 0.07127968966960907 loss: 2.2200584483554717
+exp_tless_BOP  iteration_step: 84 loss_b: 0.6906869335774733 loss_m: 0.09486664086580276 loss_em: 0.11114545166492462 loss: 2.2780728932631473
+exp_tless_BOP  iteration_step: 85 loss_b: 0.6911127173535576 loss_m: 0.09908002614974976 loss_em: 0.13160182535648346 loss: 2.3040200035669063
+exp_tless_BOP  iteration_step: 86 loss_b: 0.6910641721897938 loss_m: 0.06939919292926788 loss_em: 0.10346007347106934 loss: 2.2460517829697184
+exp_tless_BOP  iteration_step: 87 loss_b: 0.6900767305369414 loss_m: 0.08531718701124191 loss_em: 0.10975521057844162 loss: 2.2653025892005076
+exp_tless_BOP  iteration_step: 88 loss_b: 0.6901994123406348 loss_m: 0.07902218401432037 loss_em: 0.08633460104465485 loss: 2.2359550220808795
+exp_tless_BOP  iteration_step: 89 loss_b: 0.6923588349274485 loss_m: 0.06465551257133484 loss_em: 0.07341963052749634 loss: 2.215151647881177
+exp_tless_BOP  iteration_step: 90 loss_b: 0.6890950904153177 loss_m: 0.0971454381942749 loss_em: 0.11133482307195663 loss: 2.2757655325121844
+exp_tless_BOP  iteration_step: 91 loss_b: 0.6913407382282645 loss_m: 0.09043370187282562 loss_em: 0.10537008941173553 loss: 2.2698260059693545
+exp_tless_BOP  iteration_step: 92 loss_b: 0.6937268332742894 loss_m: 0.0803670585155487 loss_em: 0.0720374658703804 loss: 2.2335850242087973
+exp_tless_BOP  iteration_step: 93 loss_b: 0.690639452558215 loss_m: 0.07047384977340698 loss_em: 0.0666435956954956 loss: 2.2090358031435477
+exp_tless_BOP  iteration_step: 94 loss_b: 0.6889227875605087 loss_m: 0.07987088710069656 loss_em: 0.0828448161482811 loss: 2.229484065930504
+exp_tless_BOP  iteration_step: 95 loss_b: 0.6916879576700795 loss_m: 0.07618430256843567 loss_em: 0.10128524154424667 loss: 2.2525334171229208
+exp_tless_BOP  iteration_step: 96 loss_b: 0.6895387195201839 loss_m: 0.07453280687332153 loss_em: 0.08368167281150818 loss: 2.2268306382453815
+exp_tless_BOP  iteration_step: 97 loss_b: 0.6896259262898576 loss_m: 0.09957873821258545 loss_em: 0.11068201810121536 loss: 2.2791385351833737
+exp_tless_BOP  iteration_step: 98 loss_b: 0.6902371393486869 loss_m: 0.06781245768070221 loss_em: 0.08322516083717346 loss: 2.2217490365639363
+exp_tless_BOP  iteration_step: 99 loss_b: 0.6886997083258276 loss_m: 0.060970332473516464 loss_em: 0.0649103969335556 loss: 2.191979854384555
+exp_tless_BOP  iteration_step: 100 loss_b: 0.6892282129276646 loss_m: 0.07729178667068481 loss_em: 0.10517358779907227 loss: 2.2501500132527505
+exp_tless_BOP  iteration_step: 101 loss_b: 0.6900169319341155 loss_m: 0.07597412168979645 loss_em: 0.09486907720565796 loss: 2.240893994697801
+exp_tless_BOP  iteration_step: 102 loss_b: 0.6903134579654403 loss_m: 0.08730373531579971 loss_em: 0.1236049085855484 loss: 2.281849017797669
+exp_tless_BOP  iteration_step: 103 loss_b: 0.6894694295757504 loss_m: 0.0667501762509346 loss_em: 0.08362750709056854 loss: 2.2187859720687544
+exp_tless_BOP  iteration_step: 104 loss_b: 0.6922911711307776 loss_m: 0.09405433386564255 loss_em: 0.12406828999519348 loss: 2.294996137253169
+exp_tless_BOP  iteration_step: 105 loss_b: 0.6906192376679124 loss_m: 0.059224702417850494 loss_em: 0.06743494421243668 loss: 2.1985173596340246
+exp_tless_BOP  iteration_step: 106 loss_b: 0.6909618945302548 loss_m: 0.08179032802581787 loss_em: 0.08210913091897964 loss: 2.236785142535562
+exp_tless_BOP  iteration_step: 107 loss_b: 0.6906742536175746 loss_m: 0.09237413108348846 loss_em: 0.10174886882305145 loss: 2.266145760759264
+exp_tless_BOP  iteration_step: 108 loss_b: 0.6918444885621455 loss_m: 0.056143708527088165 loss_em: 0.05545472726225853 loss: 2.1871319014757833
+exp_tless_BOP  iteration_step: 109 loss_b: 0.6927008104181257 loss_m: 0.060872822999954224 loss_em: 0.07604192197322845 loss: 2.2150171762275597
+exp_tless_BOP  iteration_step: 110 loss_b: 0.6919963971986227 loss_m: 0.060812510550022125 loss_em: 0.11271629482507706 loss: 2.249517996970967
+exp_tless_BOP  iteration_step: 111 loss_b: 0.6905958213730505 loss_m: 0.06800862401723862 loss_em: 0.09585510194301605 loss: 2.2356511900794063
+exp_tless_BOP  iteration_step: 112 loss_b: 0.6887443538230987 loss_m: 0.07004207372665405 loss_em: 0.08370451629161835 loss: 2.2199796514875687
+exp_tless_BOP  iteration_step: 113 loss_b: 0.6880884086421195 loss_m: 0.07430312782526016 loss_em: 0.09834475815296173 loss: 2.23691311190458
+exp_tless_BOP  iteration_step: 114 loss_b: 0.6865528423473515 loss_m: 0.08912605047225952 loss_em: 0.10810119658708572 loss: 2.2568857741013995
+exp_tless_BOP  iteration_step: 115 loss_b: 0.6870443653360024 loss_m: 0.10454055666923523 loss_em: 0.1449471116065979 loss: 2.3106207642838403
+exp_tless_BOP  iteration_step: 116 loss_b: 0.6900108504140936 loss_m: 0.07504583895206451 loss_em: 0.10377059131860733 loss: 2.2488489815129524
+exp_tless_BOP  iteration_step: 117 loss_b: 0.6928355335939488 loss_m: 0.07240422815084457 loss_em: 0.08215409517288208 loss: 2.233064924105573
+exp_tless_BOP  iteration_step: 118 loss_b: 0.6935445111042201 loss_m: 0.06408216059207916 loss_em: 0.07076452672481537 loss: 2.215480220629555
+exp_tless_BOP  iteration_step: 119 loss_b: 0.6914761209572846 loss_m: 0.08114540576934814 loss_em: 0.09911352396011353 loss: 2.2546872926013153
+exp_tless_BOP  iteration_step: 120 loss_b: 0.6936992164037507 loss_m: 0.05701013654470444 loss_em: 0.07509104162454605 loss: 2.2131988273805026
+exp_tless_BOP  iteration_step: 121 loss_b: 0.692946914068386 loss_m: 0.06421808898448944 loss_em: 0.08939272165298462 loss: 2.2324515528426323
+exp_tless_BOP  iteration_step: 122 loss_b: 0.689961159809407 loss_m: 0.06420911848545074 loss_em: 0.08011464029550552 loss: 2.2142072382091773
+exp_tless_BOP  iteration_step: 123 loss_b: 0.6900012656033515 loss_m: 0.07320904731750488 loss_em: 0.06290259957313538 loss: 2.206115443700695
+exp_tless_BOP  iteration_step: 124 loss_b: 0.6899133867884852 loss_m: 0.09233411401510239 loss_em: 0.11072443425655365 loss: 2.2727987086371115
+exp_tless_BOP  iteration_step: 125 loss_b: 0.6916788044389397 loss_m: 0.06103585660457611 loss_em: 0.07102596759796143 loss: 2.2070982375193564
+exp_tless_BOP  iteration_step: 126 loss_b: 0.6896194761515098 loss_m: 0.09009470045566559 loss_em: 0.0996817797422409 loss: 2.2586349086524358
+exp_tless_BOP  iteration_step: 127 loss_b: 0.6917761615607109 loss_m: 0.0713912695646286 loss_em: 0.07238541543483734 loss: 2.2191051696815984
+exp_tless_BOP  iteration_step: 128 loss_b: 0.6911909862268071 loss_m: 0.08458615094423294 loss_em: 0.09224294871091843 loss: 2.2504020583355726
+exp_tless_BOP  iteration_step: 129 loss_b: 0.6908082197874884 loss_m: 0.08412128686904907 loss_em: 0.1237795352935791 loss: 2.2803254815250935
+exp_tless_BOP  iteration_step: 130 loss_b: 0.6886099992912539 loss_m: 0.10278750956058502 loss_em: 0.09785009920597076 loss: 2.2664676066403175
+exp_tless_BOP  iteration_step: 131 loss_b: 0.6898219573449283 loss_m: 0.07363715767860413 loss_em: 0.08867360651493073 loss: 2.23177663622832
+exp_tless_BOP  iteration_step: 132 loss_b: 0.6912132700285157 loss_m: 0.061798203736543655 loss_em: 0.0762815997004509 loss: 2.2117196135225416
+exp_tless_BOP  iteration_step: 133 loss_b: 0.6891358455609922 loss_m: 0.057873114943504333 loss_em: 0.08115231990814209 loss: 2.206432971534623
+exp_tless_BOP  iteration_step: 134 loss_b: 0.6898491808573635 loss_m: 0.06395860016345978 loss_em: 0.09466187655925751 loss: 2.2281680192948077
+exp_tless_BOP  iteration_step: 135 loss_b: 0.6917856516048695 loss_m: 0.11463887244462967 loss_em: 0.126646488904953 loss: 2.316642316164191
+exp_tless_BOP  iteration_step: 136 loss_b: 0.6900230647036939 loss_m: 0.06959787011146545 loss_em: 0.09109638631343842 loss: 2.2307634505359855
+exp_tless_BOP  iteration_step: 137 loss_b: 0.6919645925838738 loss_m: 0.05016687512397766 loss_em: 0.07840854674577713 loss: 2.204469199621376
+exp_tless_BOP  iteration_step: 138 loss_b: 0.6895549404648252 loss_m: 0.08542328327894211 loss_em: 0.12206985056400299 loss: 2.2761579552374207
+exp_tless_BOP  iteration_step: 139 loss_b: 0.690360114670491 loss_m: 0.056488990783691406 loss_em: 0.07809993624687195 loss: 2.2056692710420363
+exp_tless_BOP  iteration_step: 140 loss_b: 0.6945733672152072 loss_m: 0.05793005973100662 loss_em: 0.07252122461795807 loss: 2.2141713859945864
+exp_tless_BOP  iteration_step: 141 loss_b: 0.6919576866627222 loss_m: 0.06388566642999649 loss_em: 0.10228359699249268 loss: 2.2420423234106557
+exp_tless_BOP  iteration_step: 142 loss_b: 0.6896549957376574 loss_m: 0.05499616265296936 loss_em: 0.05675160139799118 loss: 2.1807127512639326
+exp_tless_BOP  iteration_step: 143 loss_b: 0.6905369459185706 loss_m: 0.04551047086715698 loss_em: 0.06831610202789307 loss: 2.1854374106507617
+exp_tless_BOP  iteration_step: 144 loss_b: 0.6909153945602775 loss_m: 0.06937292963266373 loss_em: 0.09459902346134186 loss: 2.2367181367748383
+exp_tless_BOP  iteration_step: 145 loss_b: 0.6896125994371226 loss_m: 0.08730442821979523 loss_em: 0.07429499179124832 loss: 2.2304372183224115
+exp_tless_BOP  iteration_step: 146 loss_b: 0.6893080492669346 loss_m: 0.0656636506319046 loss_em: 0.10232117772102356 loss: 2.235908976153732
+exp_tless_BOP  iteration_step: 147 loss_b: 0.6899199901805524 loss_m: 0.06669370830059052 loss_em: 0.08985010534524918 loss: 2.226303784187497
+exp_tless_BOP  iteration_step: 148 loss_b: 0.6905990171982208 loss_m: 0.06582051515579224 loss_em: 0.07805328071117401 loss: 2.2156708474616287
+exp_tless_BOP  iteration_step: 149 loss_b: 0.6900253984919452 loss_m: 0.06491626799106598 loss_em: 0.09728345274925232 loss: 2.232275916216154
+exp_tless_BOP  iteration_step: 150 loss_b: 0.6917056008936052 loss_m: 0.061191339045763016 loss_em: 0.09123772382736206 loss: 2.2275458655539406
+exp_tless_BOP  iteration_step: 151 loss_b: 0.6934318467912258 loss_m: 0.06875213980674744 loss_em: 0.09543558955192566 loss: 2.2444832697323505
+exp_tless_BOP  iteration_step: 152 loss_b: 0.6932929601532032 loss_m: 0.052160270512104034 loss_em: 0.06488954275846481 loss: 2.1969286937301784
+exp_tless_BOP  iteration_step: 153 loss_b: 0.6920921945700617 loss_m: 0.06299546360969543 loss_em: 0.07772748917341232 loss: 2.216999536493293
+exp_tless_BOP  iteration_step: 154 loss_b: 0.6916926908920531 loss_m: 0.06230316311120987 loss_em: 0.06758878380060196 loss: 2.204970019587971
+exp_tless_BOP  iteration_step: 155 loss_b: 0.6918452686566007 loss_m: 0.04772847145795822 loss_em: 0.05825132876634598 loss: 2.181515606194106
+exp_tless_BOP  iteration_step: 156 loss_b: 0.6916027336646103 loss_m: 0.06705554574728012 loss_em: 0.1091504842042923 loss: 2.2510142309454033
+exp_tless_BOP  iteration_step: 157 loss_b: 0.6909141396092426 loss_m: 0.066899374127388 loss_em: 0.09218350052833557 loss: 2.2318252934834515
+exp_tless_BOP  iteration_step: 158 loss_b: 0.6909085172091779 loss_m: 0.05958983302116394 loss_em: 0.08725418895483017 loss: 2.2195695736035277
+exp_tless_BOP  iteration_step: 159 loss_b: 0.6910116609519422 loss_m: 0.05962033569812775 loss_em: 0.0851256251335144 loss: 2.217780943687469
+exp_tless_BOP  iteration_step: 160 loss_b: 0.6890057920242089 loss_m: 0.06123627722263336 loss_em: 0.088239885866642 loss: 2.216493539161902
+exp_tless_BOP  iteration_step: 161 loss_b: 0.6904283918623288 loss_m: 0.07718530297279358 loss_em: 0.0766235738992691 loss: 2.225094052459049
+exp_tless_BOP  iteration_step: 162 loss_b: 0.6906444085545013 loss_m: 0.08957412838935852 loss_em: 0.10697519034147263 loss: 2.268482544394335
+exp_tless_BOP  iteration_step: 163 loss_b: 0.6906639427170473 loss_m: 0.07303713262081146 loss_em: 0.08688092231750488 loss: 2.2319098830894584
+exp_tless_BOP  iteration_step: 164 loss_b: 0.6925746657524846 loss_m: 0.08154644817113876 loss_em: 0.13026398420333862 loss: 2.289534429631931
+exp_tless_BOP  iteration_step: 165 loss_b: 0.6921232605892393 loss_m: 0.07334616035223007 loss_em: 0.09431199729442596 loss: 2.244027939414374
+exp_tless_BOP  iteration_step: 166 loss_b: 0.6911766079209577 loss_m: 0.07404102385044098 loss_em: 0.10837921500205994 loss: 2.255950062615374
+exp_tless_BOP  iteration_step: 167 loss_b: 0.6925330802871319 loss_m: 0.06419743597507477 loss_em: 0.07410603761672974 loss: 2.2159027144532004
+exp_tless_BOP  iteration_step: 168 loss_b: 0.6900914751447998 loss_m: 0.06014461815357208 loss_em: 0.09523674845695496 loss: 2.2256557920449267
+exp_tless_BOP  iteration_step: 169 loss_b: 0.688632955364417 loss_m: 0.05567678436636925 loss_em: 0.07501465082168579 loss: 2.196590301281306
+exp_tless_BOP  iteration_step: 170 loss_b: 0.6875211581517181 loss_m: 0.07500511407852173 loss_em: 0.08842962980270386 loss: 2.22599821833638
+exp_tless_BOP  iteration_step: 171 loss_b: 0.6887879814321262 loss_m: 0.07843002676963806 loss_em: 0.0779312252998352 loss: 2.2227251963658516
+exp_tless_BOP  iteration_step: 172 loss_b: 0.6912072616049405 loss_m: 0.06035546958446503 loss_em: 0.09698155522346497 loss: 2.2309588096227513
+exp_tless_BOP  iteration_step: 173 loss_b: 0.6914539186375955 loss_m: 0.08110766857862473 loss_em: 0.09571488201618195 loss: 2.2511843065075934
+exp_tless_BOP  iteration_step: 174 loss_b: 0.6906994884031188 loss_m: 0.06487555801868439 loss_em: 0.070083849132061 loss: 2.2070578723601018
+exp_tless_BOP  iteration_step: 175 loss_b: 0.693616970344797 loss_m: 0.05885695666074753 loss_em: 0.0765007957816124 loss: 2.216208663476751
+exp_tless_BOP  iteration_step: 176 loss_b: 0.6912036941337858 loss_m: 0.06007298082113266 loss_em: 0.07683011144399643 loss: 2.2105141746664865
+exp_tless_BOP  iteration_step: 177 loss_b: 0.6921198244229053 loss_m: 0.0837455689907074 loss_em: 0.08982492238283157 loss: 2.249929964642255
+exp_tless_BOP  iteration_step: 178 loss_b: 0.6913142460958869 loss_m: 0.07217999547719955 loss_em: 0.08165432512760162 loss: 2.2277770588924617
+exp_tless_BOP  iteration_step: 179 loss_b: 0.6911495067123749 loss_m: 0.08786323666572571 loss_em: 0.06586462259292603 loss: 2.227176379395776
+exp_tless_BOP  iteration_step: 180 loss_b: 0.6913651818647146 loss_m: 0.06521490961313248 loss_em: 0.076926589012146 loss: 2.2162370442194224
+exp_tless_BOP  iteration_step: 181 loss_b: 0.6914835246976133 loss_m: 0.0777127593755722 loss_em: 0.07566909492015839 loss: 2.2278324283885707
+exp_tless_BOP  iteration_step: 182 loss_b: 0.689736035365282 loss_m: 0.06379352509975433 loss_em: 0.08394689857959747 loss: 2.216948529775198
+exp_tless_BOP  iteration_step: 183 loss_b: 0.6914239005902045 loss_m: 0.050633836537599564 loss_em: 0.06787889450788498 loss: 2.192784432816098
+exp_tless_BOP  iteration_step: 184 loss_b: 0.6907206861787502 loss_m: 0.050101086497306824 loss_em: 0.07195397466421127 loss: 2.1942171196977687
+exp_tless_BOP  iteration_step: 185 loss_b: 0.6907092651290392 loss_m: 0.038753289729356766 loss_em: 0.05448760837316513 loss: 2.1653686934896395
+exp_tless_BOP  iteration_step: 186 loss_b: 0.6885561440492523 loss_m: 0.09504679590463638 loss_em: 0.09774579107761383 loss: 2.258461019130007
+exp_tless_BOP  iteration_step: 187 loss_b: 0.6918633548881722 loss_m: 0.06956756860017776 loss_em: 0.07462844997644424 loss: 2.2197860832411385
+exp_tless_BOP  iteration_step: 188 loss_b: 0.6903467713427502 loss_m: 0.05349140241742134 loss_em: 0.057488977909088135 loss: 2.18202069435476
+exp_tless_BOP  iteration_step: 189 loss_b: 0.6905289833296556 loss_m: 0.041542600840330124 loss_em: 0.059357523918151855 loss: 2.172487074747449
+exp_tless_BOP  iteration_step: 190 loss_b: 0.6905443001254409 loss_m: 0.07422872632741928 loss_em: 0.09898647665977478 loss: 2.2448481033635166
+exp_tless_BOP  iteration_step: 191 loss_b: 0.6906470417717973 loss_m: 0.06219329684972763 loss_em: 0.08514612913131714 loss: 2.2192805512964364
+exp_tless_BOP  iteration_step: 192 loss_b: 0.6907555870148958 loss_m: 0.07370050996541977 loss_em: 0.0958632230758667 loss: 2.241830494085974
+exp_tless_BOP  iteration_step: 193 loss_b: 0.6909398381883674 loss_m: 0.0626864954829216 loss_em: 0.06786984205245972 loss: 2.2033758521004834
+exp_tless_BOP  iteration_step: 194 loss_b: 0.6916058813926452 loss_m: 0.04385373368859291 loss_em: 0.05990869551897049 loss: 2.178580073385499
+exp_tless_BOP  iteration_step: 195 loss_b: 0.6891682967070099 loss_m: 0.07483051717281342 loss_em: 0.07710549235343933 loss: 2.2194408996472825
+exp_tless_BOP  iteration_step: 196 loss_b: 0.6929085764820915 loss_m: 0.06252093613147736 loss_em: 0.08828511834144592 loss: 2.2295317839191977
+exp_tless_BOP  iteration_step: 197 loss_b: 0.6909744995553052 loss_m: 0.058163389563560486 loss_em: 0.051902055740356445 loss: 2.1829889439698325
+exp_tless_BOP  iteration_step: 198 loss_b: 0.6897318246825791 loss_m: 0.07284337282180786 loss_em: 0.08181182295084 loss: 2.223850669820385
+exp_tless_BOP  iteration_step: 199 loss_b: 0.689441417720396 loss_m: 0.07855537533760071 loss_em: 0.08827101439237595 loss: 2.2351506428911647
+exp_tless_BOP  iteration_step: 200 loss_b: 0.6899668747789092 loss_m: 0.07086466252803802 loss_em: 0.10684525966644287 loss: 2.2476105465312086
+exp_tless_BOP  iteration_step: 201 loss_b: 0.691631017814336 loss_m: 0.05092664808034897 loss_em: 0.07915891706943512 loss: 2.204978618592792
+exp_tless_BOP  iteration_step: 202 loss_b: 0.6914022489372186 loss_m: 0.05458235368132591 loss_em: 0.07177716493606567 loss: 2.2005662654290474
+exp_tless_BOP  iteration_step: 203 loss_b: 0.6903624414211319 loss_m: 0.052037857472896576 loss_em: 0.07906046509742737 loss: 2.2021856468337195
+exp_tless_BOP  iteration_step: 204 loss_b: 0.6918734653691676 loss_m: 0.0726163387298584 loss_em: 0.12653157114982605 loss: 2.2747683059871875
+exp_tless_BOP  iteration_step: 205 loss_b: 0.6909389003684996 loss_m: 0.07998115569353104 loss_em: 0.1167253777384758 loss: 2.2695232345375054
+exp_tless_BOP  iteration_step: 206 loss_b: 0.6902607985666667 loss_m: 0.044804543256759644 loss_em: 0.06994904577732086 loss: 2.1855359847340807
+exp_tless_BOP  iteration_step: 207 loss_b: 0.6898745099934955 loss_m: 0.0618906132876873 loss_em: 0.08868101239204407 loss: 2.220195155660218
+exp_tless_BOP  iteration_step: 208 loss_b: 0.6908454864394938 loss_m: 0.05062955617904663 loss_em: 0.0695124939084053 loss: 2.1926785094059333
+exp_tless_BOP  iteration_step: 209 loss_b: 0.6915511328628253 loss_m: 0.046902768313884735 loss_em: 0.060414478182792664 loss: 2.1819706450851535
+exp_tless_BOP  iteration_step: 210 loss_b: 0.6906548520579343 loss_m: 0.049417853355407715 loss_em: 0.05633464455604553 loss: 2.177717054085256
+exp_tless_BOP  iteration_step: 211 loss_b: 0.6908779626860727 loss_m: 0.05920765548944473 loss_em: 0.10257840901613235 loss: 2.2344199525637953
+exp_tless_BOP  iteration_step: 212 loss_b: 0.6923758440415343 loss_m: 0.046847082674503326 loss_em: 0.05564052611589432 loss: 2.1796151409150006
+exp_tless_BOP  iteration_step: 213 loss_b: 0.6901129266465424 loss_m: 0.050032250583171844 loss_em: 0.061932120472192764 loss: 2.1823031509949917
+exp_tless_BOP  iteration_step: 214 loss_b: 0.6915947222878052 loss_m: 0.07767169177532196 loss_em: 0.08739186823368073 loss: 2.2398477268724184
+exp_tless_BOP  iteration_step: 215 loss_b: 0.6918042178067749 loss_m: 0.053075142204761505 loss_em: 0.07623652368783951 loss: 2.204724319312926
+exp_tless_BOP  iteration_step: 216 loss_b: 0.6904839187285887 loss_m: 0.07485511898994446 loss_em: 0.07528696954250336 loss: 2.221593844718214
+exp_tless_BOP  iteration_step: 217 loss_b: 0.6921092385543626 loss_m: 0.058895669877529144 loss_em: 0.07491263747215271 loss: 2.21013602301277
+exp_tless_BOP  iteration_step: 218 loss_b: 0.6911492717382682 loss_m: 0.04766908288002014 loss_em: 0.0596744641661644 loss: 2.1807913622609894
+exp_tless_BOP  iteration_step: 219 loss_b: 0.6890529412148501 loss_m: 0.06790971755981445 loss_em: 0.0808962881565094 loss: 2.215964829360874
+exp_tless_BOP  iteration_step: 220 loss_b: 0.6923837314670342 loss_m: 0.03906964138150215 loss_em: 0.05018727853894234 loss: 2.1664081143215475
+exp_tless_BOP  iteration_step: 221 loss_b: 0.6913030181318662 loss_m: 0.04357052221894264 loss_em: 0.06520044058561325 loss: 2.1826800172001546
+exp_tless_BOP  iteration_step: 222 loss_b: 0.6925014397375358 loss_m: 0.0395745150744915 loss_em: 0.05250170826911926 loss: 2.169580542556218
+exp_tless_BOP  iteration_step: 223 loss_b: 0.6913041458235817 loss_m: 0.06076742708683014 loss_em: 0.06958473473787308 loss: 2.204264599295448
+exp_tless_BOP  iteration_step: 224 loss_b: 0.6914545193610352 loss_m: 0.07349813729524612 loss_em: 0.1250697672367096 loss: 2.272931462615061
+exp_tless_BOP  iteration_step: 225 loss_b: 0.6893227427076455 loss_m: 0.08390066772699356 loss_em: 0.11114021390676498 loss: 2.263009109756695
+exp_tless_BOP  iteration_step: 226 loss_b: 0.6897074162256338 loss_m: 0.05016103386878967 loss_em: 0.06925320625305176 loss: 2.188536488798743
+exp_tless_BOP  iteration_step: 227 loss_b: 0.6924985465819008 loss_m: 0.04800497740507126 loss_em: 0.056984253227710724 loss: 2.1824848703784845
+exp_tless_BOP  iteration_step: 228 loss_b: 0.6918931676871081 loss_m: 0.06581251323223114 loss_em: 0.07587997615337372 loss: 2.217371992446929
+exp_tless_BOP  iteration_step: 229 loss_b: 0.6911261843145988 loss_m: 0.07276935875415802 loss_em: 0.09504736214876175 loss: 2.2411952738467162
+exp_tless_BOP  iteration_step: 230 loss_b: 0.6900401047093077 loss_m: 0.06803023815155029 loss_em: 0.10520940274000168 loss: 2.243359955019475
+exp_tless_BOP  iteration_step: 231 loss_b: 0.6904237247291897 loss_m: 0.04630730301141739 loss_em: 0.047956474125385284 loss: 2.165534951324372
+exp_tless_BOP  iteration_step: 232 loss_b: 0.6915437023275648 loss_m: 0.06908947974443436 loss_em: 0.09948243200778961 loss: 2.2432030187349183
+exp_tless_BOP  iteration_step: 233 loss_b: 0.6915315017316852 loss_m: 0.047772280871868134 loss_em: 0.07565713673830032 loss: 2.1980239228052243
+exp_tless_BOP  iteration_step: 234 loss_b: 0.6916475190077866 loss_m: 0.05584383383393288 loss_em: 0.08365835249423981 loss: 2.2144447433515326
+exp_tless_BOP  iteration_step: 235 loss_b: 0.6892491419822856 loss_m: 0.05881282314658165 loss_em: 0.0752502903342247 loss: 2.201810539427663
+exp_tless_BOP  iteration_step: 236 loss_b: 0.6904370991693596 loss_m: 0.06531268358230591 loss_em: 0.06391283124685287 loss: 2.2005368123372375
+exp_tless_BOP  iteration_step: 237 loss_b: 0.6889392179639553 loss_m: 0.09926839172840118 loss_em: 0.09541629254817963 loss: 2.2615023381684467
+exp_tless_BOP  iteration_step: 238 loss_b: 0.6911342044993716 loss_m: 0.057497575879096985 loss_em: 0.05962803214788437 loss: 2.190528221525096
+exp_tless_BOP  iteration_step: 239 loss_b: 0.6911970191697434 loss_m: 0.06716153025627136 loss_em: 0.08666963130235672 loss: 2.2274222190678583

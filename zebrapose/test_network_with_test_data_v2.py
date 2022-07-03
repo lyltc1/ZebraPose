@@ -9,9 +9,10 @@ from binary_code_helper.CNN_output_to_pose import CNN_outputs_to_object_pose
 from metric import Calculate_ADD_Error_BOP, Calculate_ADI_Error_BOP
 
 from tqdm import tqdm
+import torch.distributed as dist
 
 def test_network_with_single_obj(
-        net, dataloader, obj_diameter, writer, dict_class_id_3D_points, vertices, step, configs, ignore_n_bit=0,calc_add_and_adi=True):
+        net, dataloader, obj_diameter, writer, dict_class_id_3D_points, vertices, step, configs, ignore_n_bit=0,calc_add_and_adi=True, args=None):
     
     BinaryCode_Loss_Type = configs['BinaryCode_Loss_Type']
     binary_code_length = configs['binary_code_length']
@@ -106,16 +107,47 @@ def test_network_with_single_obj(
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
-    writer.add_scalar('TESTDATA_{}/{}_test'.format(main_metric_name,main_metric_name), ADX_passed, step)
-    writer.add_scalar('TESTDATA_{}/{}_Error_test'.format(main_metric_name,main_metric_name), ADX_error, step)
-    writer.add_scalar('TESTDATA_AUC_{}/AUC_{}_Error_test'.format(main_metric_name,main_metric_name), AUC_ADX_error, step)
+
+    # dist-related
+    if args.distributed:
+        tmp_ADX_passed = torch.tensor([ADX_passed, 1]).cuda(args.rank)
+        dist.all_reduce(tmp_ADX_passed, op=dist.ReduceOp.SUM, async_op=False)
+        ADX_passed = np.array((tmp_ADX_passed[0]/tmp_ADX_passed[1]).cpu())
+
+        tmp_ADX_error = torch.tensor([ADX_error, 1]).cuda(args.rank)
+        dist.all_reduce(tmp_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
+        ADX_error = np.array((tmp_ADX_error[0]/tmp_ADX_error[1]).cpu())
+
+        tmp_AUC_ADX_error = torch.tensor([AUC_ADX_error, 1]).cuda(args.rank)
+        dist.all_reduce(tmp_AUC_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
+        AUC_ADX_error = np.array((tmp_AUC_ADX_error[0]/tmp_AUC_ADX_error[1]).cpu())
+
+    if args.rank == 0 or args.rank==-1:
+        writer.add_scalar('TESTDATA_{}/{}_test'.format(main_metric_name,main_metric_name), ADX_passed, step)
+        writer.add_scalar('TESTDATA_{}/{}_Error_test'.format(main_metric_name,main_metric_name), ADX_error, step)
+        writer.add_scalar('TESTDATA_AUC_{}/AUC_{}_Error_test'.format(main_metric_name,main_metric_name), AUC_ADX_error, step)
     if calc_add_and_adi:
         ADY_passed = np.mean(ADY_passed)
         ADY_error= np.mean(ADY_error)
         AUC_ADY_error = np.mean(AUC_ADY_error)
-        writer.add_scalar('TESTDATA_{}/{}_test'.format(supp_metric_name,supp_metric_name), ADY_passed, step)
-        writer.add_scalar('TESTDATA_{}/{}_Error_test'.format(supp_metric_name,supp_metric_name), ADY_error, step)
-        writer.add_scalar('TESTDATA_AUC_{}/AUC_{}_Error_test'.format(supp_metric_name,supp_metric_name), AUC_ADY_error, step)
+        # dist-related
+        if args.distributed:
+            tmp_ADY_passed = torch.tensor([ADY_passed, 1]).cuda(args.rank)
+            dist.all_reduce(tmp_ADY_passed, op=dist.ReduceOp.SUM, async_op=False)
+            ADY_passed = np.array((tmp_ADY_passed[0]/tmp_ADY_passed[1]).cpu())
+
+            tmp_ADY_error = torch.tensor([ADY_error, 1]).cuda(args.rank)
+            dist.all_reduce(tmp_ADY_error, op=dist.ReduceOp.SUM, async_op=False)
+            ADY_error = np.array((tmp_ADY_error[0]/tmp_ADY_error[1]).cpu())
+
+            tmp_AUC_ADY_error = torch.tensor([AUC_ADY_error, 1]).cuda(args.rank)
+            dist.all_reduce(tmp_AUC_ADY_error, op=dist.ReduceOp.SUM, async_op=False)
+            AUC_ADY_error = np.array((tmp_AUC_ADY_error[0]/tmp_AUC_ADY_error[1]).cpu())
+
+        if args.rank == 0 or args.rank==-1:
+            writer.add_scalar('TESTDATA_{}/{}_test'.format(supp_metric_name,supp_metric_name), ADY_passed, step)
+            writer.add_scalar('TESTDATA_{}/{}_Error_test'.format(supp_metric_name,supp_metric_name), ADY_error, step)
+            writer.add_scalar('TESTDATA_AUC_{}/AUC_{}_Error_test'.format(supp_metric_name,supp_metric_name), AUC_ADY_error, step)
 
     #net back to train mode
     net.train()
