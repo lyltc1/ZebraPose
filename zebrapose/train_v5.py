@@ -230,7 +230,9 @@ def main(gpu, configs, args):
     binarycode_loss = BinaryCodeLoss(BinaryCode_Loss_Type, mask_binary_code_loss, divide_number_each_itration, use_histgramm_weighted_binary_loss=use_histgramm_weighted_binary_loss)
     
     #visulize input image, ground truth code, ground truth mask
-    writer = SummaryWriter(tensorboard_path)
+
+    if args.rank==0 or args.rank==-1:
+        writer = SummaryWriter(tensorboard_path)
 
     #visulize_input_data_and_network(writer, train_loader, net)
     
@@ -256,7 +258,7 @@ def main(gpu, configs, args):
         optimizer=optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     elif optimizer_type == 'Adam':
         optimizer=optim.Adam(net.parameters(), lr=learning_rate)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.7)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=1)
     else:
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
