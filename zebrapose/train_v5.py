@@ -270,11 +270,12 @@ def main(gpu, configs, args):
         raise NotImplementedError(f"unknown optimizer type: {optimizer_type}")
 
     best_score_path = os.path.join(check_point_path, 'best_score')
-    if not os.path.isdir(best_score_path):
-        os.makedirs(best_score_path)
+    if args.rank==0 or args.rank==-1:
+        if not os.path.isdir(best_score_path):
+            os.makedirs(best_score_path)
     best_score = 0
     iteration_step = 0
-    if load_checkpoint:
+    if load_checkpoint is not None and load_checkpoint != 'none':
         checkpoint = torch.load( get_checkpoint(load_checkpoint) )
         net.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
