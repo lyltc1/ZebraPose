@@ -46,12 +46,7 @@ def test_network_with_single_obj(
         AUC_ADY_error=np.zeros(len(dataloader.dataset))
 
     print("test dataset", flush=True)
-    if args.rank == 0 or args.rank == -1:
-        print('len(dataloader.batch_sampler):', len(dataloader.batch_sampler))
-        print('len(dataloader):', len(dataloader))
-        print('len(dataloader.dataset):', len(dataloader.dataset))
-        dataloader = tqdm(dataloader)
-    for batch_idx, (data, entire_masks, masks, Rs, ts, Bboxes, class_code_images, cam_Ks) in enumerate(dataloader):
+    for batch_idx, (data, entire_masks, masks, Rs, ts, Bboxes, class_code_images, cam_Ks) in enumerate(tqdm(dataloader)):
         # do the prediction and get the predicted binary code
         if torch.cuda.is_available():
             data=data.cuda()
