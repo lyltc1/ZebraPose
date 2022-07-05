@@ -46,7 +46,12 @@ def test_network_with_single_obj(
         AUC_ADY_error=np.zeros(len(dataloader.dataset))
 
     print("test dataset", flush=True)
-    for batch_idx, (data, entire_masks, masks, Rs, ts, Bboxes, class_code_images, cam_Ks) in enumerate(tqdm(dataloader)):
+    if args.rank == 0 or args.rank == -1:
+        print('len(dataloader.batch_sampler):', len(dataloader.batch_sampler))
+        print('len(dataloader):', len(dataloader))
+        print('len(dataloader.dataset):', len(dataloader.dataset))
+        dataloader = tqdm(dataloader)
+    for batch_idx, (data, entire_masks, masks, Rs, ts, Bboxes, class_code_images, cam_Ks) in enumerate(dataloader):
         # do the prediction and get the predicted binary code
         if torch.cuda.is_available():
             data=data.cuda()
@@ -106,7 +111,6 @@ def test_network_with_single_obj(
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
-    print("before reduce: args.rank:", args.rank, "ADX_passed:", ADX_passed)
     # dist-related
     if args.distributed:
         tmp_ADX_passed = torch.tensor([ADX_passed, 1]).cuda(args.rank)
@@ -117,7 +121,6 @@ def test_network_with_single_obj(
 
         dist.all_reduce(tmp_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         ADX_error = np.array((tmp_ADX_error[0]/tmp_ADX_error[1]).cpu())
-        print("after reduce: args.rank:", args.rank, "ADX_passed:", ADX_passed)
         tmp_AUC_ADX_error = torch.tensor([AUC_ADX_error, 1]).cuda(args.rank)
         dist.all_reduce(tmp_AUC_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         AUC_ADX_error = np.array((tmp_AUC_ADX_error[0]/tmp_AUC_ADX_error[1]).cpu())
