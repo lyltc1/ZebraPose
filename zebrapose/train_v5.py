@@ -1,7 +1,6 @@
-""" train_v4 with GT_v1 and net_v3 """
-""" python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
-""" CUDA_VISIBLE_DEVICES=0 python train_v4.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block > log_wood_block_v4.txt"""
-""" CUDA_VISIBLE_DEVICES=0 python train_v4.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 > log_wood_block_v4.txt"""
+""" train_v5 with GT_v1 and net_v3 and distributed training """
+""" CUDA_VISIBLE_DEVICES=2 python -u train_v5.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj03 > tmp_danka.txt """
+""" CUDA_VISIBLE_DEVICES=0,1,2 python -u train_v5.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj03 --multiprocessing-distributed --world-size 1 --rank 0 > tmp_sanka.txt """
 
 import os
 import sys
@@ -53,8 +52,6 @@ def main(gpu, configs, args):
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                 world_size=args.world_size, rank=args.rank)
 
-
-
     config_file_name = configs['config_file_name']
     #### training dataset
     bop_challange = configs['bop_challange']
@@ -84,10 +81,14 @@ def main(gpu, configs, args):
     total_iteration = configs['total_iteration']                         # train how many steps
     if args.distributed:
         total_iteration = total_iteration // args.world_size
+        configs['total_iteration'] = total_iteration
     #### optimizer
     optimizer_type = configs['optimizer_type']                           # Adam is the best sofar
     batch_size=configs['batch_size']                                     # 32 is the best so far, set to 16 for debug in local machine
     learning_rate = configs['learning_rate']                             # 0.002 or 0.003 is the best so far
+    if args.distributed:
+        learning_rate = learning_rate * args.world_size
+        configs['learning_rate'] = learning_rate
     binary_loss_weight = configs['binary_loss_weight']                     # 3 is the best so far
     #### augmentations
     Detection_reaults=configs['Detection_reaults']                       # for the test, the detected bounding box provided by GDR Net
@@ -98,6 +99,12 @@ def main(gpu, configs, args):
     # vertex code settings
     divide_number_each_itration = configs['divide_number_each_itration']
     number_of_itration = configs['number_of_itration']
+    #print the configurations
+    if args.rank==0 or args.rank==-1:
+        for key in configs:
+            print("configs[", key, "]: ", configs[key], flush=True)
+        print(args)
+
 
     # get dataset informations
     dataset_dir,source_dir,model_plys,model_info,model_ids,rgb_files,depth_files,mask_files,mask_visib_files,gts,gt_infos,cam_param_global, cam_params = bop_io.get_dataset(bop_path,dataset_name, train=True, data_folder=training_data_folder, data_per_obj=True, incl_param=True, train_obj_visible_theshold=train_obj_visible_theshold)
@@ -230,7 +237,7 @@ def main(gpu, configs, args):
     binarycode_loss = BinaryCodeLoss(BinaryCode_Loss_Type, mask_binary_code_loss, divide_number_each_itration, use_histgramm_weighted_binary_loss=use_histgramm_weighted_binary_loss)
     
     #visulize input image, ground truth code, ground truth mask
-
+    writer = None
     if args.rank==0 or args.rank==-1:
         writer = SummaryWriter(tensorboard_path)
 
@@ -268,7 +275,7 @@ def main(gpu, configs, args):
     best_score = 0
     iteration_step = 0
     if load_checkpoint:
-        checkpoint = torch.load( get_checkpoint(check_point_path) )
+        checkpoint = torch.load( get_checkpoint(load_checkpoint) )
         net.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         best_score = checkpoint['best_score']
@@ -454,9 +461,9 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    time_suffix = time.strftime('%Y-%m-%d %H:%M:%S')
-    check_point_path = check_point_path + config_file_name + args.obj_name + '_v5_' + time_suffix
-    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v5_' + time_suffix
+    time_suffix = time.strftime('%Y%m%d_%H%M%S')
+    check_point_path = check_point_path + config_file_name + args.obj_name + '_v5_' + time_suffix + '/checkpoints'
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v5_' + time_suffix + '/tensorboard_logs/runs'
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 
@@ -467,10 +474,6 @@ if __name__ == "__main__":
         dirname = os.path.dirname(__file__)
         Detection_reaults = os.path.join(dirname, Detection_reaults)
         configs['Detection_reaults'] = Detection_reaults
-
-    #print the configurations
-    for key in configs:
-        print(key, " : ", configs[key], flush=True)
     
     # dist-related
     args.ngpus_per_node = torch.cuda.device_count()
