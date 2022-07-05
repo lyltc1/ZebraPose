@@ -23,7 +23,7 @@ from binary_code_helper.CNN_output_to_pose import load_dict_class_id_3D_points, 
 sys.path.append("../bop_toolkit")
 from bop_toolkit_lib import inout
 
-from model.BinaryCodeNet_v2 import BinaryCodeNet_Deeplab_v2
+from model.BinaryCodeNet_v3 import BinaryCodeNet_Deeplab_v3
 
 from metric import Calculate_ADD_Error_BOP, Calculate_ADI_Error_BOP
 
@@ -34,7 +34,7 @@ from tools_for_BOP.common_dataset_info import get_obj_info
 from binary_code_helper.generate_new_dict import generate_new_corres_dict
 
 from tools_for_BOP import write_to_cvs
-
+import torch.distributed as dist
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 PROJ_ROOT = os.path.join(cur_dir, "..")
@@ -78,6 +78,8 @@ def compute_auc_posecnn(errors):
 
 
 def main(configs):
+    dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:23456',
+                            world_size=1, rank=0)
     #### training dataset
     bop_challange = configs['bop_challange']
     bop_path = configs['bop_path']
@@ -188,7 +190,7 @@ def main(configs):
     print("predicted binary_code_length", binary_code_length)
     configs['binary_code_length'] = binary_code_length
  
-    net = BinaryCodeNet_Deeplab_v2(
+    net = BinaryCodeNet_Deeplab_v3(
                 num_resnet_layers=resnet_layer, 
                 concat=concat, 
                 binary_code_length=binary_code_length, 
@@ -197,7 +199,9 @@ def main(configs):
             )
 
     if torch.cuda.is_available():
-        net=net.cuda()
+        torch.cuda.set_device(0)
+        net.cuda(0)
+        net = torch.nn.parallel.DistributedDataParallel(net, device_ids=[0])
 
     checkpoint = torch.load( configs['checkpoint_file'] )
     net.load_state_dict(checkpoint['model_state_dict'])
@@ -534,7 +538,7 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
-    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d-%H-%M-%S'))
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d %H:%M:%S'))
     configs['eval_output_path'] = eval_output_path
     configs['ignore_bit'] = int(args.ignore_bit)
     if not os.path.exists(eval_output_path):
