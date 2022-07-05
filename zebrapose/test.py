@@ -291,9 +291,11 @@ def main(configs):
                     #################################
                     ##### visualize for debugging
                     #################################
+                    debug_image_dir = os.path.abspath(
+                        os.path.join(eval_output_path, "{}_refine_by_{}_{}/image_{}_{}".
+                                     format(obj_name, configs.get('refine_entire_mask_type'),
+                                     configs.get('refine_mask_type'), scene_ids[batch_idx], img_ids[batch_idx])))
                     if debug:
-                        debug_image_dir = os.path.join(debug_image_root,
-                                                       "image_{}_{}".format(scene_ids[batch_idx], img_ids[batch_idx]))
                         print("visualize for debugging_{}_{}".format(scene_ids[batch_idx],img_ids[batch_idx]))
                         if not os.path.exists(debug_image_dir):
                             os.makedirs(debug_image_dir)

@@ -80,7 +80,6 @@ def test_network_with_single_obj(
                                                                             Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, dict_class_id_3D_points, 
                                                                             intrinsic_matrix=cam_K)
 
-
             batchsize = dataloader.batch_size
             sample_idx = batch_idx * batchsize + counter
             
@@ -107,7 +106,7 @@ def test_network_with_single_obj(
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
-
+    print("before reduce: args.rank:", args.rank, "ADX_error:", ADX_error)
     # dist-related
     if args.distributed:
         tmp_ADX_passed = torch.tensor([ADX_passed, 1]).cuda(args.rank)
@@ -115,9 +114,10 @@ def test_network_with_single_obj(
         ADX_passed = np.array((tmp_ADX_passed[0]/tmp_ADX_passed[1]).cpu())
 
         tmp_ADX_error = torch.tensor([ADX_error, 1]).cuda(args.rank)
+
         dist.all_reduce(tmp_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         ADX_error = np.array((tmp_ADX_error[0]/tmp_ADX_error[1]).cpu())
-
+        print("after reduce: args.rank:", args.rank, "ADX_error:", ADX_error)
         tmp_AUC_ADX_error = torch.tensor([AUC_ADX_error, 1]).cuda(args.rank)
         dist.all_reduce(tmp_AUC_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         AUC_ADX_error = np.array((tmp_AUC_ADX_error[0]/tmp_AUC_ADX_error[1]).cpu())
