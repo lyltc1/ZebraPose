@@ -106,7 +106,7 @@ def test_network_with_single_obj(
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
-    print("before reduce: args.rank:", args.rank, "ADX_error:", ADX_error)
+    print("before reduce: args.rank:", args.rank, "ADX_passed:", ADX_passed)
     # dist-related
     if args.distributed:
         tmp_ADX_passed = torch.tensor([ADX_passed, 1]).cuda(args.rank)
@@ -117,7 +117,7 @@ def test_network_with_single_obj(
 
         dist.all_reduce(tmp_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         ADX_error = np.array((tmp_ADX_error[0]/tmp_ADX_error[1]).cpu())
-        print("after reduce: args.rank:", args.rank, "ADX_error:", ADX_error)
+        print("after reduce: args.rank:", args.rank, "ADX_passed:", ADX_passed)
         tmp_AUC_ADX_error = torch.tensor([AUC_ADX_error, 1]).cuda(args.rank)
         dist.all_reduce(tmp_AUC_ADX_error, op=dist.ReduceOp.SUM, async_op=False)
         AUC_ADX_error = np.array((tmp_AUC_ADX_error[0]/tmp_AUC_ADX_error[1]).cpu())
