@@ -37,7 +37,7 @@ def test_network_with_single_obj(
     net.eval()
 
     #test with test data
-    result_size = len(dataloader) * dataloader.batch_size
+    result_size = len(dataloader.batch_sampler) * dataloader.batch_size
     ADX_passed=np.zeros(result_size)
     ADX_error=np.zeros(result_size)
     AUC_ADX_error=np.zeros(result_size)
@@ -46,7 +46,6 @@ def test_network_with_single_obj(
         ADY_error=np.zeros(result_size)
         AUC_ADY_error=np.zeros(result_size)
 
-    print("test dataset", flush=True)
     for batch_idx, (data, entire_masks, masks, Rs, ts, Bboxes, class_code_images, cam_Ks) in enumerate(tqdm(dataloader)):
         # do the prediction and get the predicted binary code
         if torch.cuda.is_available():
@@ -103,7 +102,6 @@ def test_network_with_single_obj(
                     ADY_passed[sample_idx] = 1
                 ADY_error[sample_idx] = ady_error
                 AUC_ADY_error[counter] = min(100,max(100-ady_error, 0))
-    print("ADX_error:", ADX_error)
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)

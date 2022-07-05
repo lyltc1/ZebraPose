@@ -275,7 +275,8 @@ def main(gpu, configs, args):
             os.makedirs(best_score_path)
     best_score = 0
     iteration_step = 0
-    if not (load_checkpoint is None or load_checkpoint != 'none'):
+    if not (load_checkpoint is None or load_checkpoint == 'none'):
+        print("load checkpoints")
         checkpoint = torch.load( get_checkpoint(load_checkpoint) )
         net.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -413,7 +414,6 @@ def main(gpu, configs, args):
                     writer.add_scalar('TRAIN_ADD/ADD_Error_Train', ADD_error, iteration_step)
                     writer.add_scalar('learning rate', optimizer.param_groups[0]['lr'], iteration_step)
                 ADD_passed = test_network_with_single_obj(net, test_loader, obj_diameter, writer, dict_class_id_3D_points, vertices, iteration_step, configs, 0,calc_add_and_adi=False,args=args)
-                print("ADD_passed", ADD_passed, "args.rank", args.rank)
                 if args.rank == 0 or args.rank == -1:
                     if ADD_passed >= best_score:
                         best_score = ADD_passed
