@@ -275,7 +275,7 @@ def main(gpu, configs, args):
             os.makedirs(best_score_path)
     best_score = 0
     iteration_step = 0
-    if load_checkpoint is not None and load_checkpoint != 'none':
+    if not (load_checkpoint is None or load_checkpoint != 'none'):
         checkpoint = torch.load( get_checkpoint(load_checkpoint) )
         net.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
