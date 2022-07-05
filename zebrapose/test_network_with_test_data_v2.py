@@ -102,7 +102,7 @@ def test_network_with_single_obj(
                     ADY_passed[sample_idx] = 1
                 ADY_error[sample_idx] = ady_error
                 AUC_ADY_error[counter] = min(100,max(100-ady_error, 0))
-    print("ADX_passed:", ADX_passed)
+    print("ADX_error:", ADX_error)
     ADX_passed = np.mean(ADX_passed)
     ADX_error= np.mean(ADX_error)
     AUC_ADX_error = np.mean(AUC_ADX_error)
