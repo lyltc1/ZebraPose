@@ -401,12 +401,12 @@ def main(gpu, configs, args):
                 # dist-related
                 if args.distributed:
                     tmp_ADD_passed = torch.tensor([ADD_passed, 1]).cuda(args.rank)
-                    tmp_ADD_error = torch.tensor([ADD_error, 1]).cuda(args.rank)
                     dist.all_reduce(tmp_ADD_passed, op=dist.ReduceOp.SUM, async_op=False)
-                    ADD_passed = np.array((tmp_ADD_passed[0]/tmp_ADD_passed[1]).cpu())
+                    ADD_passed = np.array((tmp_ADD_passed[0] / tmp_ADD_passed[1]).cpu())
+                    tmp_ADD_error = torch.tensor([ADD_error, 1]).cuda(args.rank)
                     dist.all_reduce(tmp_ADD_error, op=dist.ReduceOp.SUM, async_op=False)
                     ADD_error = np.array((tmp_ADD_error[0]/tmp_ADD_error[1]).cpu())
-                print(f'rank: {args.rank}: ADD_passed: {ADD_passed}, ADD_error: {ADD_error}')
+
                 if args.rank == 0 or args.rank == -1:
                     writer.add_scalar('TRAIN_ADD/ADD_Train', ADD_passed, iteration_step)
                     writer.add_scalar('TRAIN_ADD/ADD_Error_Train', ADD_error, iteration_step)
