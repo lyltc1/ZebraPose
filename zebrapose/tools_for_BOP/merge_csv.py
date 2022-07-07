@@ -4,13 +4,11 @@ import pandas as pd
 import argparse
 
 def main(input_dir, output_fn):
-    os.chdir(input_dir)
-
     extension = 'csv'
-    all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+    all_filenames = [i for i in glob.glob(input_dir+'*/*/*.{}'.format(extension), recursive=True)]
     print(all_filenames)
     #combine all files in the list
-    combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames ])
+    combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames])
     #export to csv
     combined_csv.to_csv(output_fn, index=False, encoding='utf-8-sig')
 

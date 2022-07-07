@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 
 from tools_for_BOP import bop_io
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch_v2, get_roi
 
 import torch
 import numpy as np
@@ -174,7 +174,7 @@ def main(configs):
     else:
         Det_Bbox = None
 
-    test_dataset = bop_dataset_single_obj_pytorch(
+    test_dataset = bop_dataset_single_obj_pytorch_v2(
                                             dataset_dir_test, test_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id], 
                                             test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False, 
                                             BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 

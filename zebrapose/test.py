@@ -479,8 +479,14 @@ def main(configs):
     cvs_path = os.path.join(eval_output_path, 'pose_result_bop/')
     if not os.path.exists(cvs_path):
         os.makedirs(cvs_path)
-
     write_to_cvs.write_cvs(cvs_path, "{}_{}".format(dataset_name, obj_name), obj_id+1, scene_ids, img_ids, estimated_Rs, estimated_Ts, scores)
+    with open(os.path.join(eval_output_path, "add_err.txt"), "w") as f:
+        f.write("object diameter")
+        f.write(str(obj_diameter))
+        f.write("\n")
+        for i, (rgb_file, a_error) in enumerate(zip(test_rgb_files[obj_id], ADX_error)):
+            f.write("{}:{} {}\n".format(i, a_error, rgb_file))
+
 
     ADX_passed = np.mean(ADX_passed)
     ADX_passed_5 = np.mean(ADX_passed_5)
