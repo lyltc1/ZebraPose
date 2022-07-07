@@ -1,5 +1,8 @@
 """python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker > log_large_marker_v2.txt"""
 """CUDA_VISIBLE_DEVICES=0 python train_v2.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block > log_wood_block_v2.txt"""
+"""CUDA_VISIBLE_DEVICES=0 python train_v2.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj01 > log_obj01_v2.txt """
+"""CUDA_VISIBLE_DEVICES=1 python train_v2.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj02 > log_obj02_v2.txt """
+"""CUDA_VISIBLE_DEVICES=2 python train_v2.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj03 > log_obj03_v2.txt """
 import os
 import sys
 
@@ -362,8 +365,8 @@ if __name__ == "__main__":
 
     config_file_name = os.path.basename(config_file)
     config_file_name = os.path.splitext(config_file_name)[0]
-    check_point_path = check_point_path + config_file_name + args.obj_name
-    tensorboard_path = tensorboard_path + config_file_name + args.obj_name
+    check_point_path = check_point_path + config_file_name + args.obj_name + '_v2'
+    tensorboard_path = tensorboard_path + config_file_name + args.obj_name + '_v2'
     configs['check_point_path'] = check_point_path
     configs['tensorboard_path'] = tensorboard_path
 
