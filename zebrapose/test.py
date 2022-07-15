@@ -1,6 +1,8 @@
 """ usage:
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
+python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name bowl --ckpt_file /home/lyltc/git/ZebraPose/results/zebra_ckpts/paper/ycbv/bowl --debug
+python test.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj01 --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/bop/tless/obj01 --debug
 """
 
 import os
@@ -208,10 +210,6 @@ def main(configs):
     net.eval()
 
     #test with test data
-    debug_image_root = os.path.abspath(
-        os.path.join(PROJ_ROOT, ".cache/{}_{}_{}/refine_by_{}_{}".
-                     format(time.strftime('%Y-%m-%d %H:%M:%S'), test_folder, obj_name,
-                     configs.get('refine_entire_mask_type'), configs.get('refine_mask_type'))))
 
     ADX_passed=np.zeros(len(test_loader.dataset))
     ADX_passed_5 = np.zeros(len(test_loader.dataset))
@@ -416,6 +414,21 @@ def main(configs):
                             show_titles.append("right_bit_code_images" + str(i))
                         grid_show(show_ims, show_titles, row=4, col=4, save_path=os.path.join(debug_image_dir, "per_code_img.jpg"))
 
+                        show_ims = []
+                        show_titles = []
+                        for i in range(16):
+                            show_ims.append(pred_code_images[counter][:, :, i]*255)
+                            show_titles.append("pred_code_images" + str(i))
+                        grid_show(show_ims, show_titles, row=4, col=4, save_path=os.path.join(debug_image_dir, "pred_code_images.jpg"))
+
+                        show_ims = []
+                        show_titles = []
+                        for i in range(16):
+                            show_ims.append(class_code_images[:, :, i] * 255)
+                            show_titles.append("groundTruth_code_images" + str(i))
+                        grid_show(show_ims, show_titles, row=4, col=4,
+                                  save_path=os.path.join(debug_image_dir, "groundTruth_code_images.jpg"))
+
                     R_predict = R_predict_refine
                     t_predict = t_predict_refine
 
@@ -552,6 +565,7 @@ if __name__ == "__main__":
     configs = parse_cfg(config_file)
 
     configs['obj_name'] = obj_name
+
     if 'test' not in configs['test_folder']:
         configs['Detection_reaults'] = 'none'
     if configs['Detection_reaults'] != 'none':
