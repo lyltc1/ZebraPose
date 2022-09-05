@@ -22,9 +22,88 @@ def get_target_list(target_path):      # get the test list for the bop test
        
     return target_list
 
-
 def get_bop_challange_test_data(bop_dir, dataset, target_obj_id, data_folder='test'):
     print("get_bop_challange_test_data")
+    bop_dataset_dir = os.path.join(bop_dir, dataset)
+    target_dir = os.path.join(bop_dataset_dir,data_folder)
+
+    model_dir = bop_dataset_dir+"/models_eval"
+    model_info = inout.load_json(os.path.join(model_dir,"models_info.json"))
+    model_ids = []
+    for model_id in model_info.keys():
+        ply_fn = os.path.join(model_dir,"obj_{:06d}.ply".format(int(model_id)))
+        if(os.path.exists(ply_fn)): 
+            model_ids.append(int(model_id)) #add model id only if the model.ply file exists
+    model_ids = np.sort(np.array(model_ids))
+
+    target_list_path = os.path.join(bop_dataset_dir, "test_targets_bop19.json")
+    target_list = get_target_list(target_list_path)
+
+    rgb_files_per_obj = [[] for x in range(model_ids.max())]
+    depth_files_per_obj = [[] for x in range(model_ids.max())]
+    mask_files_per_obj = [[] for x in range(model_ids.max())]
+    mask_visib_files_per_obj = [[] for x in range(model_ids.max())]
+    gts_per_obj = [[] for x in range(model_ids.max())]
+    gt_infos_per_obj = [[] for x in range(model_ids.max())]
+    params_per_obj = [[] for x in range(model_ids.max())]
+
+    current_scene_id = -1
+    has_gt = False
+    for scene_id, im_id, obj_id, inst_count in target_list:
+        if obj_id != target_obj_id:
+            continue
+        
+        if current_scene_id != scene_id:
+            scene_params = inout.load_scene_camera(os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_camera.json"))            
+            scene_gt_fn = os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt.json")
+            scene_gt_info_fn = os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt_info.json")
+            if os.path.exists(scene_gt_fn) and os.path.exists(scene_gt_info_fn):           
+                scene_gts = inout.load_scene_gt(scene_gt_fn)
+                scene_gt_infos = inout.load_scene_gt(scene_gt_info_fn)
+                has_gt = True
+            current_scene_id = scene_id
+
+        if has_gt:
+            gts = scene_gts[im_id]
+            for counter, gt in enumerate(gts):
+                if int(gt['obj_id']) == target_obj_id:
+                    visib_thershold = 0.1
+                    visib_fract = scene_gt_infos[im_id][counter]['visib_fract']
+                    if visib_fract > visib_thershold:
+                        if(dataset=="itodd"):
+                            rgb_fn = os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "gray","{:06d}.tif".format(im_id))
+                        else:
+                            rgb_fn = os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "rgb", "{:06d}.png".format(im_id))
+                        rgb_files_per_obj[target_obj_id-1].append(rgb_fn)
+                        depth_files_per_obj[target_obj_id-1].append(os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "depth", "{:06d}.png".format(im_id)))
+
+                        mask_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask","{:06d}_{:06d}.png".format(im_id, counter))   
+                        mask_visib_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask_visib","{:06d}_{:06d}.png".format(im_id, counter))
+                        
+                        mask_files_per_obj[target_obj_id-1].append([mask_fn])
+                        mask_visib_files_per_obj[target_obj_id-1].append([mask_visib_fn])
+                        gts_per_obj[target_obj_id-1].append(gt)
+                        gt_infos_per_obj[target_obj_id-1].append(scene_gt_infos[im_id][counter])  
+                        params_per_obj[target_obj_id-1].append(scene_params[im_id])
+        else:
+            if(dataset=="itodd"):
+                rgb_fn = os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "gray","{:06d}.tif".format(im_id))
+            else:
+                rgb_fn = os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "rgb", "{:06d}.png".format(im_id))
+            rgb_files_per_obj[target_obj_id-1].append(rgb_fn)
+            depth_files_per_obj[target_obj_id-1].append(os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "depth", "{:06d}.png".format(im_id)))
+            params_per_obj[target_obj_id-1].append(scene_params[im_id])
+
+            mask_files_per_obj[target_obj_id-1].append([''])
+            mask_visib_files_per_obj[target_obj_id-1].append([''])
+            gts_per_obj[target_obj_id-1].append(None)
+            gt_infos_per_obj[target_obj_id-1].append(None)  
+
+    return bop_dataset_dir,target_dir,[],[],[],rgb_files_per_obj,depth_files_per_obj,mask_files_per_obj,mask_visib_files_per_obj,gts_per_obj,gt_infos_per_obj,[],params_per_obj
+
+def get_bop_challange_test_data_(bop_dir, dataset, target_obj_id, data_folder='test'):
+    print("get_bop_challange_test_data")
+
     bop_dataset_dir = os.path.join(bop_dir, dataset)
 
     model_dir = bop_dataset_dir+"/models_eval"
@@ -51,28 +130,38 @@ def get_bop_challange_test_data(bop_dir, dataset, target_obj_id, data_folder='te
     for scene_id, im_id, obj_id, inst_count in target_list:
         if obj_id != target_obj_id:
             continue
-        
+        has_gt = False
         if current_scene_id != scene_id:
-            scene_params = inout.load_scene_camera(os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_camera.json"))            
-            scene_gts = inout.load_scene_gt(os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt.json"))
-            scene_gt_infos = inout.load_scene_gt(os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt_info.json"))
+            scene_params = inout.load_scene_camera(os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_camera.json")) 
+            scene_gt_fn = os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt.json")
+            scene_gt_info_fn = os.path.join(bop_dataset_dir,data_folder, "{:06d}".format(scene_id),"scene_gt_info.json")
+            if os.path.exists(scene_gt_fn) and os.path.exists(scene_gt_info_fn):           
+                scene_gts = inout.load_scene_gt(scene_gt_fn)
+                scene_gt_infos = inout.load_scene_gt(scene_gt_info_fn)
+                has_gt = True
             current_scene_id = scene_id
 
         rgb_files_per_obj[target_obj_id-1].append(os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "rgb", "{:06d}.png".format(im_id)))
         depth_files_per_obj[target_obj_id-1].append(os.path.join(bop_dataset_dir, data_folder, "{:06d}".format(scene_id), "depth", "{:06d}.png".format(im_id)))
         
-        gts = scene_gts[im_id]
-        for counter, gt in enumerate(gts):
-            if int(gt['obj_id']) == target_obj_id:
-                mask_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask","{:06d}_{:06d}.png".format(im_id, counter))   
-                mask_visib_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask_visib","{:06d}_{:06d}.png".format(im_id, counter))
-                
-                mask_files_per_obj[target_obj_id-1].append([mask_fn])
-                mask_visib_files_per_obj[target_obj_id-1].append([mask_visib_fn])
-                gts_per_obj[target_obj_id-1].append(gt)
-                gt_infos_per_obj[target_obj_id-1].append(scene_gt_infos[im_id][counter])  
-                params_per_obj[target_obj_id-1].append(scene_params[im_id])
-                break
+        if has_gt == True:
+            gts = scene_gts[im_id]
+            print(gts)
+            for counter, gt in enumerate(gts):
+                print(gt['obj_id'])
+                if int(gt['obj_id']) == target_obj_id:
+                    mask_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask","{:06d}_{:06d}.png".format(im_id, counter))   
+                    mask_visib_fn = os.path.join(bop_dataset_dir, data_folder,"{:06d}".format(scene_id), "mask_visib","{:06d}_{:06d}.png".format(im_id, counter))
+                    mask_files_per_obj[target_obj_id-1].append([mask_fn])
+                    mask_visib_files_per_obj[target_obj_id-1].append([mask_visib_fn])
+                    gts_per_obj[target_obj_id-1].append(gt)
+                    gt_infos_per_obj[target_obj_id-1].append(scene_gt_infos[im_id][counter])  
+                    params_per_obj[target_obj_id-1].append(scene_params[im_id])
+                    
+    print(len(rgb_files_per_obj[0]))
+    print(len(depth_files_per_obj[0]))
+    print(len(mask_files_per_obj[0]))
+    print(len(mask_visib_files_per_obj[0]))
     return bop_dataset_dir,[],[],[],[],rgb_files_per_obj,depth_files_per_obj,mask_files_per_obj,mask_visib_files_per_obj,gts_per_obj,gt_infos_per_obj,[],params_per_obj
 
 
@@ -168,6 +257,8 @@ def get_dataset(bop_dir,dataset,train=True,incl_param=False ,eval_model=False, d
                     if not os.path.exists(rgb_fn):
                         rgb_fn_no_surfix = rgb_fn[:-4]
                         rgb_fn = rgb_fn_no_surfix + ".jpg"
+                        if (dataset=="hb") and not os.path.exists(rgb_fn):
+                            continue
                             
                     if data_per_obj:
                         visib_thershold = 0.1
@@ -186,8 +277,9 @@ def get_dataset(bop_dir,dataset,train=True,incl_param=False ,eval_model=False, d
                                 depth_files_per_obj[obj_id].append(depth_fn) 
                                 mask_files_per_obj[obj_id].append([mask_fn])
                                 mask_visib_files_per_obj[obj_id].append([mask_visib_fn])
-                                gts_per_obj[obj_id].append(gt)
-                                gt_infos_per_obj[obj_id].append(scene_gt_infos[im_id][counter])  
+                                if(has_gt):
+                                    gts_per_obj[obj_id].append(gt)
+                                    gt_infos_per_obj[obj_id].append(scene_gt_infos[im_id][counter])  
                                 params_per_obj[obj_id].append(scene_params[im_id])  
                     else:
                         rgb_files_dataset.append(rgb_fn)

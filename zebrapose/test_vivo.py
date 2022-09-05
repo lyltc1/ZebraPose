@@ -1,13 +1,16 @@
 import os
 import sys
+import time
 
 sys.path.insert(0, os.getcwd())
 
 from config_parser import parse_cfg
 import argparse
+import cv2
 from tqdm import tqdm
 
 from tools_for_BOP import  bop_io
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
 
 import torch
 import numpy as np
@@ -22,7 +25,6 @@ from get_detection_results import get_detection_results_vivo
 from common_ops import from_output_to_class_mask, from_output_to_class_binary_code
 from tools_for_BOP.common_dataset_info import get_obj_info
 
-import cv2
 
 import json
 from tools_for_BOP import write_to_cvs 
@@ -81,8 +83,12 @@ def main(configs):
     vertices = inout.load_ply(mesh_path)["pts"]
 
     # define test data loader
-    dataset_dir_test,_,_,_,_,test_rgb_files,_,test_mask_files,test_mask_visib_files,test_gts,test_gt_infos,_, camera_params_test = bop_io.get_dataset(bop_path, dataset_name, train=False, data_folder=test_folder, data_per_obj=True, incl_param=True, train_obj_visible_theshold=train_obj_visible_theshold)
-      
+    if not bop_challange:
+        dataset_dir_test, bop_test_folder,_,_,_,test_rgb_files,_,test_mask_files,test_mask_visib_files,test_gts,test_gt_infos,_, camera_params_test = bop_io.get_dataset(bop_path, dataset_name, train=False, data_folder=test_folder, data_per_obj=True, incl_param=True, train_obj_visible_theshold=train_obj_visible_theshold)
+    else:
+        print("use BOP test images")
+        dataset_dir_test, bop_test_folder,_,_,_,test_rgb_files,_,test_mask_files,test_mask_visib_files,test_gts,test_gt_infos,_, camera_params_test = bop_io.get_bop_challange_test_data(bop_path, dataset_name, target_obj_id=obj_id+1, data_folder=test_folder)
+
     binary_code_length = number_of_itration
     print("predicted binary_code_length", binary_code_length)
     configs['binary_code_length'] = binary_code_length
@@ -111,7 +117,14 @@ def main(configs):
 
     test_rgb_files_no_duplicate = list(dict.fromkeys(test_rgb_files[obj_id]))
 
-    Bboxes = get_detection_results_vivo(Detection_reaults, test_rgb_files_no_duplicate, obj_id+1, 0)
+    Bboxes = get_detection_results_vivo(Detection_reaults, test_rgb_files_no_duplicate, obj_id+1, 0.2)
+
+    ##get camera parameters
+    camera_params_dict = dict()
+    for scene_id in os.listdir(bop_test_folder):
+        current_dir = bop_test_folder+"/"+scene_id
+        scene_params = inout.load_scene_camera(os.path.join(current_dir,"scene_camera.json"))
+        camera_params_dict[scene_id] = scene_params
 
     composed_transforms_img = transforms.Compose([
             transforms.ToTensor(),
@@ -124,8 +137,8 @@ def main(configs):
             scene_id = rgb_fn_splitted[-3]
             img_id = rgb_fn_splitted[-1].split(".")[0]
             rgb_fname = rgb_fn
-           
-            Cam_K = camera_params_test[obj_id][0]['cam_K'].reshape((3,3))
+
+            Cam_K = camera_params_dict[scene_id][int(img_id)]['cam_K'].reshape((3,3))
             
             Bbox = Detected_Bbox['bbox_est']
             score = Detected_Bbox['score']
@@ -178,17 +191,19 @@ if __name__ == "__main__":
     parser.add_argument('--cfg', type=str) # config file
     parser.add_argument('--obj_name', type=str)
     parser.add_argument('--ckpt_file', type=str)
-    parser.add_argument('--ignore_bit', type=str)  # use the full 16 bit binary code, or ignore last n-bits
-    parser.add_argument('--eval_output_path', type=str)
+    parser.add_argument('--ignore_bit', default='0', type=str)  # use the full 16 bit binary code, or ignore last n-bits
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     config_file = args.cfg
     checkpoint_file = args.ckpt_file
-    eval_output_path = args.eval_output_path
     obj_name = args.obj_name
+    debug = args.debug
     configs = parse_cfg(config_file)
 
     configs['obj_name'] = obj_name
 
+    if 'test' not in configs['test_folder']:
+        configs['Detection_reaults'] = 'none'
     if configs['Detection_reaults'] != 'none':
         Detection_reaults = configs['Detection_reaults']
         dirname = os.path.dirname(__file__)
@@ -196,12 +211,28 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d %H:%M:%S'))
     configs['eval_output_path'] = eval_output_path
-
     configs['ignore_bit'] = int(args.ignore_bit)
+    if not os.path.exists(eval_output_path):
+        os.makedirs(eval_output_path)
+    with open(os.path.join(eval_output_path, 'config.txt'), 'w') as f:
+        f.writelines('------------------ start ------------------' + '\n')
+        for eachArg, value in configs.items():
+            f.writelines(eachArg + ' : ' + str(value) + '\n')
+        f.writelines('------------------- end -------------------')
 
-    #print the configurations
-    for key in configs:
-        print(key, " : ", configs[key], flush=True)
+    f = open(os.path.join(eval_output_path, 'log.txt'), 'a')
+    sys.stdout = f
+    sys.stderr = f  # redirect std err, if necessary
 
+    if configs.get('refine', False):
+        from binary_code_helper.CNN_output_to_pose import mapping_pixel_position_to_original_position
+
+    if debug:
+        from edge_refine.build.examples.edge_refine_debug import py_edge_refine
+        from vis_util.image import grid_show
+        from lib.meshrenderer.meshrenderer_phong import Renderer
+    else:
+        from edge_refine.build.examples.edge_refine import py_edge_refine
     main(configs)
