@@ -22,7 +22,7 @@ def get_gt_scene_crops(scene_id, eval_args, train_args):
     workspace_path = os.environ.get("AE_WORKSPACE_PATH")
     dataset_path = u.get_dataset_path(workspace_path)
 
-    H = train_args.getint("Dataset", "H")
+    H = train_args.getint("DatasetInfo", "H")
 
     cfg_string = str([scene_id] + eval_args.items("DATA") + eval_args.items("BBOXES") + [H])
     current_config_hash = hashlib.md5(cfg_string).hexdigest()
@@ -81,8 +81,8 @@ def generate_scene_crops(test_imgs, test_depth_imgs, bboxes, eval_args, train_ar
     pad_factor = eval_args.getfloat("BBOXES", "PAD_FACTOR")
     icp = eval_args.getboolean("EVALUATION", "ICP")
 
-    W_AE = train_args.getint("Dataset", "W")
-    H_AE = train_args.getint("Dataset", "H")
+    W_AE = train_args.getint("DatasetInfo", "W")
+    H_AE = train_args.getint("DatasetInfo", "H")
 
     test_img_crops, test_img_depth_crops, bb_scores, bb_vis, bbs = {}, {}, {}, {}, {}
 

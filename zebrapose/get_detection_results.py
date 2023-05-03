@@ -18,7 +18,6 @@ def get_detection_results(detection_results_file, rgb_fns, obj_id, score_thr):
         best_det_score = 0
         for d in detection:
             detected_obj_id = d["obj_id"]
-            
             bbox_est = d["bbox_est"]  # xywh
             score = d["score"]
             if score < score_thr:

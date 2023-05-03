@@ -1,0 +1,1 @@
+""" read the csv file and do icp """

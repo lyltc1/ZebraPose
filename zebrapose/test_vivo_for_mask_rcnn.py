@@ -1,20 +1,20 @@
 """ usage:
-python test_vivo.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --ckpt_file path/to/the/best/checkpoint --ignore_bit 0 --obj_name obj01 --eval_output_path path/to/save/the/evaluation/report
+choose mask from net or maskrcnn in code (search "pred_masks =" in code)
+python test_vivo_for_mask_rcnn.py --cfg config/config_BOP/itodd/exp_itodd_BOP.txt --ckpt_file results/checkpoints/itodd_obj_18_1_0000step356000 --obj_name obj18
 """
 
 import os
 import sys
 import time
-
+import cv2
 sys.path.insert(0, os.getcwd())
 
 from config_parser import parse_cfg
 import argparse
-import cv2
+
 from tqdm import tqdm
 
-from tools_for_BOP import  bop_io
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
+from tools_for_BOP import bop_io
 
 import torch
 import numpy as np
@@ -25,7 +25,7 @@ from bop_toolkit_lib import inout
 
 from model.BinaryCodeNet import BinaryCodeNet_Deeplab
 
-from get_detection_results import get_detection_results_vivo
+from get_mask_rcnn_results import get_detection_results_vivo
 from common_ops import from_output_to_class_mask, from_output_to_class_binary_code
 from tools_for_BOP.common_dataset_info import get_obj_info
 
@@ -146,11 +146,29 @@ def main(configs):
             
             Bbox = Detected_Bbox['bbox_est']
             score = Detected_Bbox['score']
+            segmentation = Detected_Bbox['segmentation']
+            if segmentation is not None:
+                rle = segmentation['counts']
+                height = segmentation['size'][0]
+                width = segmentation['size'][1]
+                assert sum(rle) == height * width
+                M = np.zeros(height * width)
+                N = len(rle)
+                n = 0
+                val = 1
+                for pos in range(N):
+                    val = not val
+                    for c in range(rle[pos]):
+                        M[n] = val
+                        n += 1
+                mask = M.reshape(([height, width]), order='F')
             rgb_img = cv2.imread(rgb_fname)
             Bbox = padding_Bbox(Bbox, 1.5)
             rgb_roi = get_roi(rgb_img, Bbox, 256, interpolation=cv2.INTER_LINEAR, resize_method=resize_method)
-            #cv2.imshow("rgb_roi", rgb_roi)
-            
+            roi_mask = get_roi(mask, Bbox, 128, interpolation=cv2.INTER_NEAREST, resize_method=resize_method)
+            # cv2.imshow("rgb_roi", rgb_roi)
+            # cv2.imshow("roi_mask", roi_mask)
+            # cv2.waitKey()
             Bbox = get_final_Bbox(Bbox, resize_method, rgb_img.shape[1], rgb_img.shape[0])
 
             roi_pil = Image.fromarray(np.uint8(rgb_roi)).convert('RGB')
@@ -158,14 +176,15 @@ def main(configs):
 
             input_x=torch.unsqueeze(input_x, 0).cuda()
             pred_mask_prob, pred_code_prob = net(input_x)
-            pred_masks = from_output_to_class_mask(pred_mask_prob)
 
             pred_codes = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
-           
             pred_codes = pred_codes.transpose(0, 2, 3, 1)
-
-            pred_masks = pred_masks.transpose(0, 2, 3, 1)
-            pred_masks = pred_masks.squeeze(axis=-1).astype('uint8')
+            if 0: # use mask from net
+                pred_masks = from_output_to_class_mask(pred_mask_prob)
+                pred_masks = pred_masks.transpose(0, 2, 3, 1)
+                pred_masks = pred_masks.squeeze(axis=-1).astype('uint8')  # ndarray(1, 128, 128)
+            if 1: # use mask from maskrcnn
+                pred_masks = roi_mask[np.newaxis, ...].astype('uint8')
 
             R_predict, t_predict, success = CNN_outputs_to_object_pose(pred_masks[0], pred_codes[0],
                                                                         Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, dict_class_id_3D_points, 
@@ -215,7 +234,7 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
-    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d %H:%M:%S'))
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d_%H_%M_%S'))
     configs['eval_output_path'] = eval_output_path
     configs['ignore_bit'] = int(args.ignore_bit)
     if not os.path.exists(eval_output_path):

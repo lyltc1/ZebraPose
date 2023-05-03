@@ -179,8 +179,8 @@ def main(configs):
                 num_resnet_layers=resnet_layer, 
                 concat=concat, 
                 binary_code_length=binary_code_length, 
-                divided_number_each_iteration = divide_number_each_itration, 
-                output_kernel_size = output_kernel_size
+                divided_number_each_iteration=divide_number_each_itration,
+                output_kernel_size=output_kernel_size
             )
     maskLoss = MaskLoss()
     binarycode_loss = BinaryCodeLoss(BinaryCode_Loss_Type, mask_binary_code_loss, divide_number_each_itration, use_histgramm_weighted_binary_loss=use_histgramm_weighted_binary_loss)

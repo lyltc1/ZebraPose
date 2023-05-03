@@ -1,3 +1,7 @@
+""" usage:
+python test_vivo.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --ckpt_file path/to/the/best/checkpoint --ignore_bit 0 --obj_name obj01 --eval_output_path path/to/save/the/evaluation/report
+"""
+
 import os
 import sys
 import time
@@ -10,7 +14,7 @@ import cv2
 from tqdm import tqdm
 
 from tools_for_BOP import  bop_io
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
+from bop_dataset_pytorch import bop_dataset_single_obj_pytorch # not use?
 
 import torch
 import numpy as np

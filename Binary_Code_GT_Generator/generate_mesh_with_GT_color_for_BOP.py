@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append("../Tools_for_BOP")
+sys.path.append("../zebrapose/tools_for_BOP")
 import bop_io
 
 
@@ -10,7 +10,7 @@ def generate_meshs(bop_path, dataset_name, divide_number_each_iteration, number_
 
     if not(os.path.exists(dataset_dir + "/models_GT_color/")):
         os.makedirs(dataset_dir + "/models_GT_color/")
-    
+
     for counter, (m_id,model_ply) in enumerate(model_plys.items()): 
         orginal_mesh = model_ply[:-4]
         orginal_mesh = orginal_mesh + ".obj"

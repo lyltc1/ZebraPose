@@ -2,7 +2,7 @@
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
 python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name bowl --ckpt_file /home/lyltc/git/ZebraPose/results/zebra_ckpts/paper/ycbv/bowl --debug
-python test.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/bop/tless/obj04 --debug
+python test.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj01 --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/bop/tless/obj01 --debug
 """
 
 import os
@@ -37,7 +37,7 @@ from tools_for_BOP.common_dataset_info import get_obj_info
 
 from binary_code_helper.generate_new_dict import generate_new_corres_dict
 
-from tools_for_BOP import write_to_cvs 
+from tools_for_BOP import write_to_cvs
 
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -100,7 +100,7 @@ def main(configs):
     BinaryCode_Loss_Type = configs['BinaryCode_Loss_Type']              # now only support "L1" or "BCE"
     output_kernel_size = configs['output_kernel_size']                  # last layer kernel size
     resnet_layer = configs['resnet_layer']                              # usually resnet 34
-    concat=configs['concat_encoder_decoder']                   
+    concat=configs['concat_encoder_decoder']
 
     #### augmentations
     Detection_reaults=configs['Detection_reaults']                       # for the test, the detected bounding box provided by GDR Net
@@ -131,7 +131,7 @@ def main(configs):
         Calculate_Pose_Error_Supp = Calculate_ADI_Error_BOP
         main_metric_name = 'ADD'
         supp_metric_name = 'ADI'
-    
+
     mesh_path = model_plys[obj_id+1] # mesh_path is a dict, the obj_id should start from 1
     obj_diameter = model_info[str(obj_id+1)]['diameter']
     print("obj_diameter", obj_diameter)
@@ -180,10 +180,10 @@ def main(configs):
         Det_Bbox = None
 
     test_dataset = bop_dataset_single_obj_pytorch(
-                                            dataset_dir_test, test_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id], 
-                                            test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False, 
-                                            BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
-                                            padding_ratio=padding_ratio, resize_method=resize_method,Detect_Bbox=Det_Bbox,
+                                            dataset_dir_test, test_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id],
+                                            test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False,
+                                            BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos,
+                                            padding_ratio=padding_ratio, resize_method=resize_method, Detect_Bbox=Det_Bbox,
                                             use_peper_salt=use_peper_salt, use_motion_blur=use_motion_blur
                                         )
     print("test image example:", test_rgb_files[obj_id][0], flush=True)
@@ -192,12 +192,12 @@ def main(configs):
     binary_code_length = number_of_itration
     print("predicted binary_code_length", binary_code_length)
     configs['binary_code_length'] = binary_code_length
- 
+
     net = BinaryCodeNet_Deeplab(
-                num_resnet_layers=resnet_layer, 
-                concat=concat, 
-                binary_code_length=binary_code_length, 
-                divided_number_each_iteration = divide_number_each_itration, 
+                num_resnet_layers=resnet_layer,
+                concat=concat,
+                binary_code_length=binary_code_length,
+                divided_number_each_iteration = divide_number_each_itration,
                 output_kernel_size = output_kernel_size
             )
 
@@ -227,7 +227,7 @@ def main(configs):
     ignore_bit = configs['ignore_bit']
     if ignore_bit!=0:
         new_dict_class_id_3D_points = generate_new_corres_dict(dict_class_id_3D_points, 16, 16-ignore_bit)
-    
+
     img_ids = []
     scene_ids = []
     estimated_Rs = []
@@ -249,7 +249,7 @@ def main(configs):
 
         pred_masks = from_output_to_class_mask(pred_mask_prob)
         pred_code_images = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
-       
+
         # from binary code to pose
         pred_code_images = pred_code_images.transpose(0, 2, 3, 1)
 
@@ -261,18 +261,18 @@ def main(configs):
         Bboxes = Bboxes.detach().cpu().numpy()
 
         class_code_images = class_code_images.detach().cpu().numpy().transpose(0, 2, 3, 1).squeeze(axis=0).astype('uint8')
-        
+
         for counter, (r_GT, t_GT, Bbox, cam_K) in enumerate(zip(Rs, ts, Bboxes, cam_Ks)):
             if ignore_bit!=0:
                 R_predict, t_predict, success = CNN_outputs_to_object_pose(pred_masks[counter], pred_code_images[counter][:,:,:-ignore_bit],
-                                                                            Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, new_dict_class_id_3D_points, 
+                                                                            Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, new_dict_class_id_3D_points,
                                                                             intrinsic_matrix=cam_K)
             else:
-                R_predict, t_predict, success = CNN_outputs_to_object_pose(pred_masks[counter], pred_code_images[counter], 
-                                                                            Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, dict_class_id_3D_points, 
+                R_predict, t_predict, success = CNN_outputs_to_object_pose(pred_masks[counter], pred_code_images[counter],
+                                                                            Bbox, BoundingBox_CropSize_GT, divide_number_each_itration, dict_class_id_3D_points,
                                                                             intrinsic_matrix=cam_K)
 
-            if success:     
+            if success:
                 if configs.get('refine', False):
                     ### refine code
                     gt_entire_mask = entire_masks[counter].cpu().numpy().astype('uint8')
@@ -429,17 +429,6 @@ def main(configs):
                         grid_show(show_ims, show_titles, row=4, col=4,
                                   save_path=os.path.join(debug_image_dir, "groundTruth_code_images.jpg"))
 
-                        pred_code_prob = torch.nn.Sigmoid()(pred_code_prob)
-                        pred_code_prob = pred_code_prob.detach().cpu().numpy()
-                        pred_code_prob = pred_code_prob.transpose(0, 2, 3, 1)
-                        show_ims = []
-                        show_titles = []
-                        for i in range(16):
-                            show_ims.append(pred_code_prob[counter, :, :, i] * 255)
-                            show_titles.append("pred_code_before_thershold" + str(i))
-                        grid_show(show_ims, show_titles, row=4, col=4,
-                                  save_path=os.path.join(debug_image_dir, "pred_code_before_thershold.jpg"))
-
                     R_predict = R_predict_refine
                     t_predict = t_predict_refine
 
@@ -467,7 +456,7 @@ def main(configs):
                 adx_error = Calculate_Pose_Error_Main(r_GT, t_GT, R_predict, t_predict, vertices)
                 if np.isnan(adx_error):
                     adx_error = 10000
-                    
+
             if adx_error < obj_diameter*0.1:
                 ADX_passed[batch_idx] = 1
             if adx_error < obj_diameter*0.05:
@@ -481,7 +470,7 @@ def main(configs):
                 if adx_error < t:
                     sum_correct = sum_correct + 1
             AUC_ADX_error[batch_idx] = sum_correct/10
-           
+
             if calc_add_and_adi:
                 ady_error = 10000
                 if success:
@@ -491,7 +480,7 @@ def main(configs):
                 if ady_error < obj_diameter*0.1:
                     ADY_passed[batch_idx] = 1
                 ADY_error[batch_idx] = ady_error
-               
+
                 th = np.linspace(10, 100, num=10)
                 sum_correct = 0
                 for t in th:
@@ -535,7 +524,7 @@ def main(configs):
     path = os.path.join(eval_output_path, "ADD_result/")
     if not os.path.exists(path):
         os.makedirs(path)
-    path = path + "{}_{}".format(dataset_name, obj_name) + ".txt" 
+    path = path + "{}_{}".format(dataset_name, obj_name) + ".txt"
     #path = path + dataset_name + obj_name  + "ignorebit_" + str(configs['ignore_bit']) + ".txt"
     #path = path + dataset_name + obj_name + "radix" + "_" + str(divide_number_each_itration)+"_"+str(number_of_itration) + ".txt"
     print('save ADD results to', path)
@@ -586,7 +575,7 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
-    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d-%H-%M-%S'))
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d %H:%M:%S'))
     configs['eval_output_path'] = eval_output_path
     configs['ignore_bit'] = int(args.ignore_bit)
     if not os.path.exists(eval_output_path):

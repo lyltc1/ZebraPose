@@ -195,5 +195,11 @@ class DeepLabV3_non_binary(nn.Module):
 
         return mask, binary_code
     
-    
 
+if __name__ == "__main__":
+    from thop import profile
+    model = BinaryCodeNet_Deeplab(34, 16, 2, True)
+    inputs = [torch.randn(1, 3, 256, 256)]
+    flops, params = profile(model, inputs=inputs)
+    print("flops:", flops / 1e9, "G")
+    print("params:", params / 1e6, "M")

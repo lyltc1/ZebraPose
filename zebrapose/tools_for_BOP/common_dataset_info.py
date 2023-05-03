@@ -60,7 +60,7 @@ ycbv_symmetry_obj = {
 }
 
 
-##### tudl
+##### tless
 tless_obj_name_obj_id = {
     'obj01': 1,
     'obj02': 2,
@@ -108,15 +108,18 @@ tudl_obj_name_obj_id = {
 
 tudl_symmetry_obj = [] 
 
+##### itodd
+itodd_obj_name_obj_id = {'obj{:02d}'.format(obj_id+1):obj_id+1 for obj_id in range(28)}
+itodd_symmetry_obj = ['obj{:02d}'.format(obj_id+1) for obj_id in range(28) if obj_id + 1 not in [1, 6, 10, 13, 15, 16, 20, 21, 22, 26]]
 
 def get_obj_info(dataset_name):
-    if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl']:
+    if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl', 'itodd']:
         raise AssertionError("dataset name unknow")
     return eval("{}_obj_name_obj_id".format(dataset_name)), eval("{}_symmetry_obj".format(dataset_name))
 
 
 def get_sym_obj_id(dataset_name):
-    if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl']:
+    if dataset_name not in ['lmo', 'ycbv', 'tless', 'tudl', 'itodd']:
         raise AssertionError("dataset name unknow")
     obj_name_obj_id = eval("{}_obj_name_obj_id".format(dataset_name))
     symmetry_obj = eval("{}_symmetry_obj".format(dataset_name))

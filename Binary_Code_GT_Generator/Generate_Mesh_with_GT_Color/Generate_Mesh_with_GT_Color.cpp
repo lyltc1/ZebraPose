@@ -22,30 +22,35 @@ using HierarchyLayer = std::vector<ClassifiedPointIndices>;
 using HierarchyPointIndices = std::vector<HierarchyLayer>;
 
 void local_index_to_global_index(const ClassifiedPointIndices &local_indices, const PointIndices &input_indices, ClassifiedPointIndices &global_indices)
+
 {
     // this function transfer the index of a vertex in a dividied point cloud back to the index in the original point cloud
     int num_class = local_indices.size();
     global_indices.resize(num_class);
 
     for(int i = 0; i < num_class; ++i)
-    {
+    
+{
         int num_index_of_class = local_indices[i].size();
         global_indices[i].resize(num_index_of_class);
         for(int j = 0; j < num_index_of_class; ++j)
-        {
+        
+{
             global_indices[i][j] = input_indices[local_indices[i][j]];
         }
     }
 }
 
 pcl::PointCloud<pcl::PointXYZ> extract_point_from_pointcloud(const pcl::PointCloud<pcl::PointXYZ> &input_pointcloud, const PointIndices &input_indices)
+
 {
     int number_points = input_indices.size();
     pcl::PointCloud<pcl::PointXYZ> filterd_pointcloud;
     filterd_pointcloud.resize(number_points);
 
     for(int i = 0; i < number_points; ++i)
-    {
+    
+{
         filterd_pointcloud.points[i] = input_pointcloud.points[input_indices[i]];
     }
 
@@ -55,6 +60,7 @@ pcl::PointCloud<pcl::PointXYZ> extract_point_from_pointcloud(const pcl::PointClo
 
 void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &input_pointcloud, const PointIndices &input_indices, const int &n_mesh_after, 
                             ClassifiedPointIndices &output_indices)
+
 {
     pcl::PointCloud<pcl::PointXYZ> pointcloud_before_divide;
     pointcloud_before_divide = extract_point_from_pointcloud(input_pointcloud, input_indices);
@@ -65,7 +71,8 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
     cv::Mat labels;
 
     for (int i = 0; i < number_of_points; i++)
-    {
+    
+{
         float data[3];
         data[0] = pointcloud_before_divide.points[i].x;
         data[1] = pointcloud_before_divide.points[i].y;
@@ -88,13 +95,15 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
     std::cout << "centroid count: " << centers.size() << std::endl;
 
     if(centers.size() != n_mesh_after)
-    {
+    
+{
         std::cout << "number of centroids as defined" << std::endl;
         return;
     }
 
     for (int i = 0; i < n_mesh_after; i++)
-    {
+    
+{
         std::cout << i << "_cent output: x: " << centers[i].x << " ,";
         std::cout << "y: " << centers[i].y << " ,";
         std::cout << "z: " << centers[i].z << std::endl;
@@ -105,7 +114,8 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
     std::vector<std::vector<double>> distance_points_to_centroids(number_of_points);
     
     for (int i = 0; i < number_of_points; ++i)
-    {
+    
+{
         std::vector<double> distance_to_centroids(n_mesh_after);
         double distance;
         double distance_x;
@@ -113,7 +123,8 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
         double distance_z;
 
         for(int j = 0; j < n_mesh_after; ++j)
-        {
+        
+{
             distance_x = centers[j].x - pointcloud_before_divide.points[i].x;
             distance_y = centers[j].y - pointcloud_before_divide.points[i].y;
             distance_z = centers[j].z - pointcloud_before_divide.points[i].z;
@@ -139,26 +150,31 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
     int number_of_point_class_1 = local_indices[1].size();
 
     if(number_of_point_class_0 > target_number_of_point)
-    {
+    
+{
         PointIndices cleaned_index_0(target_number_of_point);
 
         std::vector<std::pair<int, int> > vp; 
 
         for (int j = 0; j < number_of_point_class_0; ++j) 
-        { 
+        
+{ 
             vp.push_back(std::make_pair(distance_points_to_centroids[local_indices[0][j]][1], j)); 
         }
         sort(vp.begin(), vp.end(), std::greater <std::pair<int, int>>()); 
 
         
         for (int j = 0; j < number_of_point_class_0; j++) 
-        { 
+        
+{ 
             if (j < target_number_of_point) 
-            {
+            
+{
                 cleaned_index_0[j] = local_indices[0][vp[j].second];
             }
             else
-            {
+            
+{
                 local_indices[1].push_back(local_indices[0][vp[j].second]);
             }
         } 
@@ -166,26 +182,31 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
     }
 
     if(number_of_point_class_1 > target_number_of_point)
-    {
+    
+{
         PointIndices cleaned_index_1(target_number_of_point);
       
         std::vector<std::pair<int, int> > vp; 
 
         for (int j = 0; j < number_of_point_class_1; ++j) 
-        { 
+        
+{ 
             vp.push_back(std::make_pair(distance_points_to_centroids[local_indices[1][j]][0], j)); 
         }
         sort(vp.begin(), vp.end(), std::greater <std::pair<int, int>>()); 
 
         
         for (int j = 0; j < number_of_point_class_1; j++) 
-        { 
+        
+{ 
             if (j < target_number_of_point) 
-            {
+            
+{
                 cleaned_index_1[j] = local_indices[1][vp[j].second];
             }
             else
-            {
+            
+{
                 local_indices[0].push_back(local_indices[1][vp[j].second]);
             }
         } 
@@ -199,24 +220,28 @@ void Divide_PointCloud_Opencv_Samesize(const pcl::PointCloud<pcl::PointXYZ> &inp
 
 void Divide_PointCloud_Itrativ(const pcl::PointCloud<pcl::PointXYZ> &input_pointcloud, const int &divide_number, const int &number_of_itration,
                                 HierarchyPointIndices &hierarchy_indices)
+
 {
     ClassifiedPointIndices output_indices;
     for(int i = 0; i < number_of_itration; ++i)  //for each hierarchy layer
-    {
+    
+{
         std::cout << "\n" << i << std::endl;
         std::cout << "start division:" << i << std::endl;
 
         int num_classified_group_of_layer = hierarchy_indices[i].size();
         
         for(int j = 0; j < num_classified_group_of_layer; ++j)   //for each classified group this layer
-        {
+        
+{
             std::cout << "further divide of class:" << j << std::endl;
             int num_class = hierarchy_indices[i][j].size();
 
             hierarchy_indices[i+1].resize(num_classified_group_of_layer * num_class);
 
             for(int k = 0; k < num_class; ++k)   //for each class in the group
-            {
+            
+{
                 std::cout << "class:" << k << std::endl;
                 Divide_PointCloud_Opencv_Samesize(input_pointcloud, hierarchy_indices[i][j][k], divide_number, output_indices);
                 hierarchy_indices[i+1][j * num_class + k] = output_indices;
@@ -227,6 +252,7 @@ void Divide_PointCloud_Itrativ(const pcl::PointCloud<pcl::PointXYZ> &input_point
 }
 
 void result_visulization(const HierarchyPointIndices &hierarchy_indices, const pcl::PointCloud<pcl::PointXYZ> &input_pointcloud)
+
 {
     cv::Mat colorbar = cv::imread("/home/ysu/data/colorbar_rgbr.png");  
     int colorbar_length = colorbar.size[1];
@@ -236,24 +262,28 @@ void result_visulization(const HierarchyPointIndices &hierarchy_indices, const p
     int number_of_itration = hierarchy_indices.size();
     colored_pointclouds.resize(number_of_itration);
     for(int i = 0; i < number_of_itration; ++i)
-    {
+    
+{
         colored_pointclouds[i].resize(input_pointcloud.points.size());
     }
 
     //std::cout << number_of_itration << std::endl;
     for(int i = 0; i < number_of_itration; ++i)  //for each hierarchy layer
-    {
+    
+{
         int num_classified_group_of_layer = hierarchy_indices[i].size();
 
         for(int j = 0; j < num_classified_group_of_layer; ++j)   //for each classified group this layer
-        {
+        
+{
             int num_class = hierarchy_indices[i][j].size();
             
             int number_color = num_classified_group_of_layer * num_class;
 
 
             for(int k = 0; k < num_class; ++k)   //for each class in the group
-            {
+            
+{
                 int class_color_position = (colorbar_length/number_color) * (j * num_class + k);
                 int class_color_r = (int) colorbar.at<cv::Vec3b>(0, class_color_position)[2];
                 int class_color_g = (int) colorbar.at<cv::Vec3b>(0, class_color_position)[1];
@@ -263,7 +293,8 @@ void result_visulization(const HierarchyPointIndices &hierarchy_indices, const p
                 
                 int number_of_point_class = hierarchy_indices[i][j][k].size();
                 for(int n = 0; n < number_of_point_class; ++n)  //color each point
-                {
+                
+{
                     int point_index = hierarchy_indices[i][j][k][n];
                     pcl::PointXYZRGB point = colored_pointclouds[i][point_index];
                     point.x = input_pointcloud.points[point_index].x;
@@ -289,19 +320,24 @@ void result_visulization(const HierarchyPointIndices &hierarchy_indices, const p
 
 
 void generate_point_id_class_result(const HierarchyPointIndices &hierarchy_indices, const int &number_points, std::vector<int> &point_class_results)
+
 {
     point_class_results.resize(number_points, 0);
     int number_of_iteration = hierarchy_indices.size();
     for(int i = 1; i < number_of_iteration; ++i)
-    {
+    
+{
         int number_of_groups_layer = hierarchy_indices[i].size();
         for(int j = 0; j < number_of_groups_layer; ++j)
-        {
+        
+{
             for(int m = 0; m < 2; m++)
-            {
+            
+{
                 int number_points_in_class = hierarchy_indices[i][j][m].size();
                 for(int k = 0; k < number_points_in_class; ++k)
-                {
+                
+{
                     int point_index = hierarchy_indices[i][j][m][k];
 
                     int point_class_result = point_class_results[point_index];
@@ -318,13 +354,15 @@ void generate_point_id_class_result(const HierarchyPointIndices &hierarchy_indic
 
 
 void generate_face_id_class_result(const std::vector<int> &point_class_results, const pcl::PolygonMesh &Orginal_Mesh, std::vector<int> &face_class_results)
+
 {
     //get total number of faces
     int number_of_faces = Orginal_Mesh.polygons.size();
     face_class_results.resize(number_of_faces);
 
     for(int i = 0; i < number_of_faces; ++i)
-    {
+    
+{
         int point_index_0 = Orginal_Mesh.polygons[i].vertices[0];
         int point_index_1 = Orginal_Mesh.polygons[i].vertices[1];
         int point_index_2 = Orginal_Mesh.polygons[i].vertices[2];
@@ -336,15 +374,18 @@ void generate_face_id_class_result(const std::vector<int> &point_class_results, 
         //If two vertices of this face have the same class_id, the face is labeled with this class_id. 
         //Otherwise, the face is classified as the class_id of the first vertex
         if(point_0_class == point_1_class || point_0_class == point_2_class)
-        {
+        
+{
             face_class_results[i] = point_0_class;
         }
         else if(point_1_class == point_2_class)
-        {
+        
+{
             face_class_results[i] = point_1_class;
         }
         else
-        {
+        
+{
             face_class_results[i] = point_0_class;
         }
         //std::cout << face_class_results[i] <<std::endl;
@@ -354,6 +395,7 @@ void generate_face_id_class_result(const std::vector<int> &point_class_results, 
 
 void generate_class_corres_point_result(const int &number_total_class, const std::vector<int> &face_class_results, const pcl::PolygonMesh &Orginal_Mesh, 
                                             const pcl::PointCloud<pcl::PointXYZ> &Orginal_Pointcloud, std::vector<std::vector<double>> &class_corres_point_result)
+
 {
     class_corres_point_result.resize(number_total_class);
 
@@ -362,19 +404,22 @@ void generate_class_corres_point_result(const int &number_total_class, const std
 
     int number_of_faces = face_class_results.size();
     for(int i = 0; i < number_of_faces; ++i)
-    {
+    
+{
         int face_class = face_class_results[i];
         class_face_results[face_class].push_back(i);
     }
 
     for(int i = 0; i < number_total_class; ++i)
-    {
+    
+{
         //get face ids
         std::vector<int> face_ids = class_face_results[i];
         //get vertex ids
         std::vector<int> vertex_ids;
         for(int n = 0; n < face_ids.size(); ++n)
-        {
+        
+{
             vertex_ids.push_back(Orginal_Mesh.polygons[face_ids[n]].vertices[0]);
             vertex_ids.push_back(Orginal_Mesh.polygons[face_ids[n]].vertices[1]);
             vertex_ids.push_back(Orginal_Mesh.polygons[face_ids[n]].vertices[2]);
@@ -387,7 +432,8 @@ void generate_class_corres_point_result(const int &number_total_class, const std
         double sum_z = 0;
 
         for(int n = 0; n < number_of_vertex; ++n)
-        {
+        
+{
             double x_position;
             double y_position;
             double z_position;
@@ -410,6 +456,7 @@ void generate_class_corres_point_result(const int &number_total_class, const std
 
 
 void class_id_to_RGB_value(const int &class_id, int &R_channel, int &G_channel, int &B_channel)
+
 {
     int r_mask = 0x0000FF;
     int g_mask = 0x00FF00;
@@ -423,6 +470,7 @@ void class_id_to_RGB_value(const int &class_id, int &R_channel, int &G_channel, 
 
 void create_mesh_with_labeled_color(const pcl::PolygonMesh &Orginal_Mesh, const pcl::PointCloud<pcl::PointXYZ> &Orginal_Pointcloud, 
                                                 const std::vector<int> &face_class_results, pcl::PolygonMesh &Output_Mesh)
+
 {
     int number_face = Orginal_Mesh.polygons.size();
     Output_Mesh.polygons.resize(number_face);
@@ -434,7 +482,8 @@ void create_mesh_with_labeled_color(const pcl::PolygonMesh &Orginal_Mesh, const 
     std::unordered_set <int> used_vertex; 
 
     for(int i = 0; i < number_face; ++i)
-    {
+    
+{
         //for vertex in the mesh face, if the vetex has been used, then create a duplicate vertex for it self, and use the duplicate one in the new face
         Output_Mesh.polygons[i].vertices.resize(3);
         int class_id = face_class_results[i];
@@ -444,10 +493,12 @@ void create_mesh_with_labeled_color(const pcl::PolygonMesh &Orginal_Mesh, const 
         class_id_to_RGB_value(class_id, color_r, color_g, color_b);
     
         for(int j = 0; j < 3; j++)
-        {
+        
+{
             int vertex_id = Orginal_Mesh.polygons[i].vertices[j];
             if (used_vertex.find(vertex_id) == used_vertex.end()) 
-            {
+            
+{
                 used_vertex.insert(vertex_id);
                 //this vertex can be directly saved
                 Output_Mesh.polygons[i].vertices[j] = vertex_id;
@@ -463,7 +514,8 @@ void create_mesh_with_labeled_color(const pcl::PolygonMesh &Orginal_Mesh, const 
                 cloud_in_mesh->points[vertex_id] = point;
             }
             else
-            {
+            
+{
                 //need create a duplicate for this vertex, and use the duplicate
                 pcl::PointXYZRGB point;
                 point.x = Orginal_Pointcloud.points[vertex_id].x;
@@ -487,6 +539,7 @@ void create_mesh_with_labeled_color(const pcl::PolygonMesh &Orginal_Mesh, const 
 
 
 int main(int argc, char** argv) 
+
 {
     //1. argument: How many parts should the mesh be divided each time (divide_number_each_iteration)
     //2. argument: How many iteration totally (number_of_itration)
@@ -495,7 +548,8 @@ int main(int argc, char** argv)
     //5. argument: mesh file output name
 
     if(argc < 6)
-    {
+    
+{
         std::cout << "missing some arguments" << std::endl;
         return 0;
     }
@@ -516,7 +570,8 @@ int main(int argc, char** argv)
     //the intial state is all points
     PointIndices initial_indices(Orginal_Pointcloud.points.size());
     for(int i = 0; i < Orginal_Pointcloud.points.size(); ++i)
-    {
+    
+{
         initial_indices[i] = i;
     }
 
@@ -562,7 +617,8 @@ int main(int argc, char** argv)
     result_file.open (txt_output_path);
     result_file << number_total_class << " " << divide_number_each_iteration << " " << number_of_itration << "\n";
     for(int i = 0; i < class_id_to_corres_point.size(); ++i)
-    {
+    
+{
         result_file << i << " " << class_id_to_corres_point[i][0] << " " << class_id_to_corres_point[i][1] << " " << class_id_to_corres_point[i][2] << "\n";
     }
     result_file.close();

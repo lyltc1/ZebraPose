@@ -1,8 +1,6 @@
 """ usage:
-python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
-python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
-python test.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name bowl --ckpt_file /home/lyltc/git/ZebraPose/results/zebra_ckpts/paper/ycbv/bowl --debug
-python test.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/bop/tless/obj04 --debug
+python test_for_mask_rcnn.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name large_marker --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/large_marker
+python test_for_mask_rcnn.py --cfg config/config_paper/ycbv/exp_ycbv_paper.txt --obj_name wood_block --ckpt_file /media/lyltc/mnt2/dataset/zebrapose/zebra_ckpts/paper/ycbv/wood_block --debug
 """
 
 import os
@@ -18,7 +16,7 @@ from tqdm import tqdm
 
 
 from tools_for_BOP import bop_io
-from bop_dataset_pytorch import bop_dataset_single_obj_pytorch, get_roi
+from bop_dataset_pytorch_mask_rcnn import bop_dataset_single_obj_pytorch, get_roi
 
 import torch
 import numpy as np
@@ -31,7 +29,7 @@ from model.BinaryCodeNet import BinaryCodeNet_Deeplab
 
 from metric import Calculate_ADD_Error_BOP, Calculate_ADI_Error_BOP
 
-from get_detection_results import get_detection_results, ycbv_select_keyframe, get_detection_scores
+from get_mask_rcnn_results import get_detection_results, ycbv_select_keyframe, get_detection_scores
 from common_ops import from_output_to_class_mask, from_output_to_class_binary_code
 from tools_for_BOP.common_dataset_info import get_obj_info
 
@@ -174,16 +172,18 @@ def main(configs):
         dataset_dir_test,_,_,_,_,test_rgb_files,_,test_mask_files,test_mask_visib_files,test_gts,test_gt_infos,_, camera_params_test = bop_io.get_bop_challange_test_data(bop_path, dataset_name, target_obj_id=obj_id+1, data_folder=test_folder)
 
     if Detection_reaults != 'none':
-        Det_Bbox = get_detection_results(Detection_reaults, test_rgb_files[obj_id], obj_id+1, 0)
+        Det_Bbox, Det_Segmentation = get_detection_results(Detection_reaults, test_rgb_files[obj_id], obj_id+1, 0)
         scores = get_detection_scores(Detection_reaults, test_rgb_files[obj_id], obj_id+1, 0)
     else:
         Det_Bbox = None
+        Det_Segmentation = None
 
     test_dataset = bop_dataset_single_obj_pytorch(
                                             dataset_dir_test, test_folder, test_rgb_files[obj_id], test_mask_files[obj_id], test_mask_visib_files[obj_id], 
                                             test_gts[obj_id], test_gt_infos[obj_id], camera_params_test[obj_id], False, 
                                             BoundingBox_CropSize_image, BoundingBox_CropSize_GT, GT_code_infos, 
-                                            padding_ratio=padding_ratio, resize_method=resize_method,Detect_Bbox=Det_Bbox,
+                                            padding_ratio=padding_ratio, resize_method=resize_method,
+                                            Detect_Bbox=Det_Bbox,Detect_Segmentation=Det_Segmentation,
                                             use_peper_salt=use_peper_salt, use_motion_blur=use_motion_blur
                                         )
     print("test image example:", test_rgb_files[obj_id][0], flush=True)
@@ -245,9 +245,11 @@ def main(configs):
             masks = masks.cuda()
             class_code_images = class_code_images.cuda()
 
-        pred_mask_prob, pred_code_prob = net(data)
-
+        ##### get pred_mask_prob from dataloader instead of net output
+        _, pred_code_prob = net(data)
+        pred_mask_prob = masks.unsqueeze(axis=1)
         pred_masks = from_output_to_class_mask(pred_mask_prob)
+
         pred_code_images = from_output_to_class_binary_code(pred_code_prob, BinaryCode_Loss_Type, divided_num_each_interation=divide_number_each_itration, binary_code_length=binary_code_length)
        
         # from binary code to pose
@@ -414,32 +416,6 @@ def main(configs):
                             show_titles.append("right_bit_code_images" + str(i))
                         grid_show(show_ims, show_titles, row=4, col=4, save_path=os.path.join(debug_image_dir, "per_code_img.jpg"))
 
-                        show_ims = []
-                        show_titles = []
-                        for i in range(16):
-                            show_ims.append(pred_code_images[counter][:, :, i]*255)
-                            show_titles.append("pred_code_images" + str(i))
-                        grid_show(show_ims, show_titles, row=4, col=4, save_path=os.path.join(debug_image_dir, "pred_code_images.jpg"))
-
-                        show_ims = []
-                        show_titles = []
-                        for i in range(16):
-                            show_ims.append(class_code_images[:, :, i] * 255)
-                            show_titles.append("groundTruth_code_images" + str(i))
-                        grid_show(show_ims, show_titles, row=4, col=4,
-                                  save_path=os.path.join(debug_image_dir, "groundTruth_code_images.jpg"))
-
-                        pred_code_prob = torch.nn.Sigmoid()(pred_code_prob)
-                        pred_code_prob = pred_code_prob.detach().cpu().numpy()
-                        pred_code_prob = pred_code_prob.transpose(0, 2, 3, 1)
-                        show_ims = []
-                        show_titles = []
-                        for i in range(16):
-                            show_ims.append(pred_code_prob[counter, :, :, i] * 255)
-                            show_titles.append("pred_code_before_thershold" + str(i))
-                        grid_show(show_ims, show_titles, row=4, col=4,
-                                  save_path=os.path.join(debug_image_dir, "pred_code_before_thershold.jpg"))
-
                     R_predict = R_predict_refine
                     t_predict = t_predict_refine
 
@@ -586,7 +562,7 @@ if __name__ == "__main__":
         configs['Detection_reaults'] = Detection_reaults
 
     configs['checkpoint_file'] = checkpoint_file
-    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d-%H-%M-%S'))
+    eval_output_path = os.path.join(configs['eval_output_path'], time.strftime('%Y-%m-%d_%H_%M_%S'))
     configs['eval_output_path'] = eval_output_path
     configs['ignore_bit'] = int(args.ignore_bit)
     if not os.path.exists(eval_output_path):
