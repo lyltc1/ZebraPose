@@ -1,7 +1,7 @@
 #### training dataset
 ##for ycbv, bop_challange = False during the training
 bop_challange = True
-bop_path = /home/ysu/data/data_object_pose/Remote_BOP
+bop_path = /home/ZebraPose/datasets
 dataset_name = ycbv
 training_data_folder = train_real
 training_data_folder_2 = train_pbr
@@ -32,8 +32,10 @@ concat_encoder_decoder = True
 
 #### check points
 load_checkpoint=False
-check_point_path=/home/ysu/data/6dof_pose_experiments/experiments/checkpoints/
-tensorboard_path=/home/ysu/data/6dof_pose_experiments/experiments/tensorboard_logs/runs/
+check_point_path=/home/ZebraPose/results/zebra_ckpts
+tensorboard_path=/home/ZebraPose/results/tensorboard
+eval_output_path=/home/ZebraPose/results/evaluate_report/
+
 ####
 
 

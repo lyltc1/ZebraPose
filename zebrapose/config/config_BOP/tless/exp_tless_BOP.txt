@@ -1,11 +1,11 @@
 #### training dataset
 bop_challange = True
-bop_path = /home/ysu/data/data_object_pose/Remote_BOP
+bop_path = /home/ZebraPose/datasets
 dataset_name = tless
 training_data_folder = train_real
 training_data_folder_2 = train_pbr
-val_folder = test_primesense_bop
-test_folder = test_primesense_bop
+val_folder = test_primesense
+test_folder = test_primesense
 second_dataset_ratio = 0.75
 num_workers = 8
 train_obj_visible_theshold = 0.2
@@ -31,9 +31,9 @@ concat_encoder_decoder = True
 
 #### check points
 load_checkpoint=False
-check_point_path=/home/ysu/data/6dof_pose_experiments/experiments/checkpoints/
-tensorboard_path=/home/ysu/data/6dof_pose_experiments/experiments/tensorboard_logs/runs/
-####
+check_point_path=/home/ZebraPose/results/zebra_ckpts
+tensorboard_path=/home/ZebraPose/results/tensorboard
+eval_output_path=/home/ZebraPose/results/evaluate_report/
 
 
 #### optimizer

@@ -2,8 +2,8 @@ refine = True
 refine_entire_mask_type = gt_entire_mask
 refine_mask_type = gt_mask
 #### training dataset
-bop_challange = False
-bop_path = /home/lyl/git/ZebraPose/datasets/BOP_DATASETS
+bop_challange = True
+bop_path = /home/ZebraPose/datasets
 dataset_name = ycbv
 training_data_folder = train_real
 training_data_folder_2 = train_pbr
