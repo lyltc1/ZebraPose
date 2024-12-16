@@ -1,6 +1,6 @@
 import cv2
 import sys
-sys.path.append('/home/lyl/git/ZebraPose/zebrapose')
+sys.path.append('/home/ZebraPose/zebrapose')
 
 from binary_code_helper.class_id_encoder_decoder import RGB_image_to_class_id_image, class_id_image_to_class_code_images, class_code_images
 
