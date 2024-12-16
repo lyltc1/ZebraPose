@@ -42,7 +42,7 @@ mkdir /home/ZebraPose/datasets/
 mkdir /home/ZebraPose/datasets/tless/
 ln -sf /home/dataset/tless/* /home/ZebraPose/datasets/tless/
 ln -sf /home/dataset/tless/models_cad /home/ZebraPose/datasets/tless/models
-ln -sf /home/data/GT/tless/test_primesense_bop_GT/ /home/ZebraPose/datasets/tless/test_primesense_GT/
+ln -s /home/data/GT/tless/test_primesense_bop_GT/ /home/ZebraPose/datasets/tless/test_primesense_GT
 ln -sf /home/data/GT/tless/models_GT_color/ /home/ZebraPose/datasets/tless/
 ln -sf /home/data/ckpt/tless /home/ZebraPose/datasets/tless
 
