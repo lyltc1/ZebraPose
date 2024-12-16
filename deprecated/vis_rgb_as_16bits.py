@@ -12,7 +12,7 @@ class_code_images = class_id_image_to_class_code_images(class_id_image, iteratio
 # shape of class_code_images is (H, W, 8)
 # save each channel as a separate image
 for i in range(class_code_images.shape[2]):
-    channel_image = class_code_images[:, :, i]
+    channel_image = class_code_images[:, :, i] * 255.
     output_path = f"/home/data/vis/class_code_channel_{i}.png"
     cv2.imwrite(output_path, channel_image)
     print(f"Saved {output_path}")
