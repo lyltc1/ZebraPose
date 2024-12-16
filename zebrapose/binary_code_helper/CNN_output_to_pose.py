@@ -1,7 +1,11 @@
 from binary_code_helper.class_id_encoder_decoder import class_code_images_to_class_id_image
 import numpy as np
 import cv2
-import pyprogressivex
+try:
+    import pyprogressivex
+    USE_PYPROGRESSIVEX = True
+except:
+    USE_PYPROGRESSIVEX = False
 
 def load_dict_class_id_3D_points(path):
     total_numer_class = 0
@@ -125,7 +129,7 @@ def CNN_outputs_to_object_pose(mask_image, class_code_image, Bbox, Bbox_Size, cl
             coord_3d = np.ascontiguousarray(Points_3D.astype(np.float32))
             intrinsic_matrix = np.ascontiguousarray(intrinsic_matrix)
 
-            if success:
+            if success and USE_PYPROGRESSIVEX:
                 pose_ests, label = pyprogressivex.find6DPoses(
                                                             x1y1 = coord_2d.astype(np.float64),
                                                             x2y2z2 = coord_3d.astype(np.float64),
