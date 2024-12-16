@@ -21,6 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y python3-tk
 
 WORKDIR /home/ZebraPose
 RUN git clone https://github.com/lyltc1/bop_toolkit.git
+WORKDIR /home/ZebraPose/bop_toolkit
 RUN pip install -e .
 
 WORKDIR /home/ZebraPose
