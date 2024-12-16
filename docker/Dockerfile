@@ -8,7 +8,7 @@ RUN apt-get update
 RUN apt-get install -y git
 
 WORKDIR /home
-RUN git clone --recurse-submodules https://github.com/lyltc1/ZebraPose
+RUN git clone https://github.com/lyltc1/ZebraPose
 
 # Install other dependency
 RUN apt-get install -y libgl1
@@ -19,7 +19,8 @@ RUN pip install imgaug pypng opencv-python-headless
 RUN pip install pandas scikit-learn open3d-cpu
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y python3-tk
 
-WORKDIR /home/ZebraPose/bop_toolkit
+WORKDIR /home/ZebraPose
+RUN git clone https://github.com/lyltc1/bop_toolkit.git
 RUN pip install -e .
 
 WORKDIR /home/ZebraPose
