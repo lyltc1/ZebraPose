@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 
 module = Extension('Render',
-                    include_dirs = ['/home/lyltc/miniconda3/envs/pose/include','..','/home/lyltc/miniconda3/envs/pose/lib/python3.8/site-packages/numpy/core/include/',
+                    include_dirs = ['/usr/local/include','..','/usr/local/lib/python3.8/dist-packages/numpy/core/include/',
                     '../render_related_source/glad/include'],
                     libraries = ['opencv_core', 'opengl_render'],
                     library_dirs = ['/usr/local/lib', '../build'],
