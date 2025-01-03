@@ -54,3 +54,9 @@ ln -sf /home/data/ckpt/tless /home/ZebraPose/datasets/tless
 cd /home/ZebraPose/zebrapose
 python test_for_visulize.py --cfg config/config_BOP/tless/exp_tless_BOP.txt --obj_name obj04 --ckpt_file /home/data/ckpt/tless_real/obj04
 ```
+
+## Generator
+```
+docker pull lyltc1/zebrapose_generator:latest
+docker run -it --gpus all lyltc1/zebrapose_generator:latest
+```
